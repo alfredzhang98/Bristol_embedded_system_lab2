@@ -36,11 +36,17 @@ policies, either expressed or implied, of the FreeBSD Project.
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
+#define BACKWARD         0x00
+#define FORWARD          0x01
+#define LEFT_FORWARD     0x02
+#define RIGHT_FORWARD    0x03
+
 void Motor_InitSimple(void);
 void Motor_StopSimple(uint32_t time_ms);
 void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms);
 void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms);
 void Motor_LeftSimple(uint16_t duty, uint32_t time_ms);
 void Motor_RightSimple(uint16_t duty, uint32_t time_ms);
+void Motor_Degree(uint8_t turn, uint16_t degree);
 
 #endif
