@@ -157,36 +157,41 @@ void mtr_pwm_loop(uint16_t high_duty, uint32_t time_ms, uint8_t direction){
       //the loop count
       uint32_t i;
       // The PWM has high (H) and low (L) cycle.
-      uint16_t low_duty = 1000 - high_duty;
+      uint16_t low_duty;
 
-      //my way of pwm
-    //   uint32_t pwm_rate = time_ms;
-    //   uint32_t us_block = (time_ms / pwm_rate) * 1000;
-    //   float duty_time = high_duty * 1.0 / ((low_duty + high_duty) * 1.0);
-    //   uint32_t wait_time_high = us_block * duty_time;
+      if(high_duty > 1000){
+        printf("Wrong duty input\n");
+      }else{
+        low_duty =  = 1000 - high_duty;
 
-    //   #ifdef debug_motor
-    //     printf("low_duty: %d\n", low_duty);
-    //     printf("high_duty:%d\n", high_duty);
-    //     printf("duty_time: %f\n", duty_time);
-    //     printf("us_block: %d\n", us_block);
-    //   #endif
+        //my way of pwm
+        // uint32_t pwm_rate = time_ms;
+        // uint32_t us_block = (time_ms / pwm_rate) * 1000;
+        // float duty_time = high_duty * 1.0 / ((low_duty + high_duty) * 1.0);
+        // uint32_t wait_time_high = us_block * duty_time;
 
-    //   for (i = 0; i < pwm_rate; i++){
-    //     mtr_out_control(direction);
-    //     Clock_Delay1us(wait_time_high);
-    //     mtr_out_control(STOP);
-    //     Clock_Delay1us(us_block - wait_time_high);
-    //   }
+        // #ifdef debug_motor
+        //     printf("low_duty: %d\n", low_duty);
+        //     printf("high_duty:%d\n", high_duty);
+        //     printf("duty_time: %f\n", duty_time);
+        //     printf("us_block: %d\n", us_block);
+        // #endif
+
+        // for (i = 0; i < pwm_rate; i++){
+        //     mtr_out_control(direction);
+        //     Clock_Delay1us(wait_time_high);
+        //     mtr_out_control(STOP);
+        //     Clock_Delay1us(us_block - wait_time_high);
+        // }
     
-      //hint way
-      for (i = 0; i < time_ms; i++){
-        mtr_out_control(direction);
-        Clock_Delay1us(high_duty);
-        mtr_out_control(STOP);
-        Clock_Delay1us(low_duty);
+        //hint way
+        for (i = 0; i < time_ms; i++){
+            mtr_out_control(direction);
+            Clock_Delay1us(high_duty);
+            mtr_out_control(STOP);
+            Clock_Delay1us(low_duty);
+        }
       }
-
       SysTick_Wait(1);
 }
 
