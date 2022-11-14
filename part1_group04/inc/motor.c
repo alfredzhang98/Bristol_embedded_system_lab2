@@ -165,7 +165,6 @@ void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms){
 
 	// The PWM has high (H) and low (L) cycle.
     L = 1000-duty; // PWM using H and L
-		
 	
 	/*
 	  Section: mtr_dir_bwd
@@ -295,4 +294,21 @@ void Motor_RightSimple(uint16_t duty, uint32_t time_ms){
 	  
 	  // (4) wait for 1ms using SysTick_Wait
 	
+}
+
+
+/*
+    turn: 0 left, 1 right
+*/
+void Motor_Degree(uint8_t turn, uint16_t degree){
+    uint32_t round_us = 500;
+    float percent_round = (degree * 1.0) / (360 * 1.0);
+    uint32_t percent_round = percent_round * round_us;
+    if(turn == 0){
+        Motor_LeftSimple(500, percent_round);
+    }else if(turn == 1){
+        Motor_RightSimple(500, percent_round);
+    }else{
+        printf("Wrong turn\n");
+    }
 }
