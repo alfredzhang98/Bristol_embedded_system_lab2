@@ -48,6 +48,11 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "msp.h"
 #include "SysTick.h"
 
+#define debug_motor
+
+#define BACKWARD 0x00
+#define FORWARD 0x01
+
 // *******Lab 12 *******
 
 void Motor_InitSimple(void){
@@ -67,18 +72,42 @@ void Motor_StopSimple(uint32_t time_ms){
   SysTick_Wait10ms(time_ms); // wait for multiple of 10ms from SysTick
 }
 
+/*
+    direction: 0 is for the forward, 1 is for the backward
+*/
 void mtr_dir_direction(uint8_t direction){
 
     if(direction == 0){
-        P1 -> OUT = 0xC0;
+        P1 -> OUT = 0x00;
         P2 -> OUT = 0xC0;
     }else if(direction == 1){
-        P1 -> OUT = 0x00;
+        P1 -> OUT = 0xC0;
         P2 -> OUT = 0xC0;
     }
     else{
         printf("Wrong direction\n");
     }
+}
+
+/*
+    function: used for the loop of the pwm motor
+*/
+void mtr_pwm_loop(uint16_t high_duty, uint16_t low_duty, uint32_t time_ms, uint8_t direction){
+      uint32_t pwm_rate = time_ms;
+      uint32_t us_block = (time_ms / pwm_rate) * 1000;
+      float duty_time = high_duty * 1.0 / ((low_duty + high_duty) * 1.0);
+      #ifdef debug_motor
+        printf("low_duty: %d\n", low_duty);
+        printf("high_duty:%d\n", high_duty);
+        printf("duty_time: %f\n", duty_time);
+        printf("us_block: %d\n", us_block);
+      #endif
+      for (i = 0; i < pwm_rate; i++){
+        mtr_dir_direction(direction);
+        uint32_t wait_time_high = us_block * duty_time;
+        SysTick_Wait1us(wait_time_high);
+        Motor_StopSimple(us_block - wait_time_high);
+      }
 }
 
 void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms){
@@ -113,25 +142,9 @@ void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms){
 	*/
 	
 	// use for loop here from 0 to time_ms, count every 1 step
-
+    
 	  // (1) turn on the PWM of both motors using OUT
-        uint32_t pwm_rate = time_ms * 1000;
-
-        for(i == 0; i < pwm_rate; i++){
-            i
-        }
-//      uint32_t pwm_rate = time_ms;
-//      uint32_t us_block = (time_ms / pwm_rate) * 1000;
-//      float duty_time = duty / (L + duty);
-//      printf("L: %d\n", L);
-//      printf("D:%d\n", duty);
-//      printf("duty_time: %f\n", duty_time);
-//      printf("us_block: %d\n", us_block);
-//      for (i = 0; i < pwm_rate; i++){
-//          mtr_dir_direction(0);
-//          SysTick_Wait1us(us_block * duty_time);
-//          Motor_StopSimple(us_block - us_block * duty_time / 10);
-//      }
+      mtr_pwm_loop(duty, L, time_ms, FORWARD);
 	  // (2) wait for 1us for the duty
       SysTick_Wait1us(1);
 	  
@@ -180,9 +193,10 @@ void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms){
 	// use for loop here from 0 to time_ms, count every 1 step
 
 	  // (1) turn on the PWM of both motors using OUT
-	  
+	  mtr_pwm_loop(duty, L, time_ms, BACKWARD);
 	  // (2) wait for 1us for the duty
-	  
+	  SysTick_Wait1us(1);
+      
       // turn of the PWM of both motors
 	  P2->OUT &= ~0xC0; 
 	  
