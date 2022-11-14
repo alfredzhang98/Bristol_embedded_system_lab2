@@ -62,12 +62,11 @@ void Motor_InitSimple(void){
     P1->OUT |= 0xD2;          // P1.4 and P1.1 are pull-up
 }
 
-void Motor_Stop_us(uint32_t time_us){
+void Motor_Stop(){
 // Stops both motors, puts driver to sleep
 // Returns right away
   P1->OUT &= ~0xC0;   // off
   P2->OUT &= ~0xC0;   // off
-  SysTick_Wait1us(time_us); // wait for multiple of 10ms from SysTick
 }
 
 void Motor_StopSimple(uint32_t time_ms){
@@ -94,26 +93,48 @@ void Motor_StopSimple(uint32_t time_ms){
 */
 void mtr_dir_direction(uint8_t direction){
     switch(direction){
+        case STOP:
+            P1 -> OUT &= ~0xC0;
+            break;
         case BACKWARD:
-            P1 -> OUT = 0x00;
-            P2 -> OUT = 0xC0;
+            P1 -> OUT = (P1 -> OUT & 0x3F) | 0x00;
             break;
         case FORWARD:
-            P1 -> OUT = 0xC0;
-            P2 -> OUT = 0xC0;
+            P1 -> OUT = (P1 -> OUT & 0x3F) | 0xC0;
             break;
         case LEFT_FORWARD:
-            P1 -> OUT = 0xC0;
-            P2 -> OUT = 0x40;
+            P1 -> OUT = (P1 -> OUT & 0x3F) | 0x40;
             break;
         case RIGHT_FORWARD:
-            P1 -> OUT = 0xC0;
-            P2 -> OUT = 0x80;
+            P1 -> OUT = (P1 -> OUT & 0x3F) | 0x80;
             break;
         default:
             printf("Wrong direction\n");
     }
     SysTick_Wait1us(10);
+}
+
+void mtr_out_control(uint8_t direction){
+    switch(direction){
+        case STOP:
+            P2 -> OUT &= ~0xC0;
+            break;
+        case BACKWARD:
+            P2 -> OUT = (P2 -> OUT & 0x3F) | 0xC0;
+            break;
+        case FORWARD:
+            P2 -> OUT = (P2 -> OUT & 0x3F) | 0xC0;
+            break;
+        case LEFT_FORWARD:
+            P2 -> OUT = (P2 -> OUT & 0x3F) | 0x40;
+            break;
+        case RIGHT_FORWARD:
+            P2 -> OUT = (P2 -> OUT & 0x3F) | 0x80;
+            break;
+        default:
+            printf("Wrong out\n");
+    }
+    SysTick_Wait1us(10);  
 }
 
 /*
@@ -139,49 +160,68 @@ void mtr_pwm_loop(uint16_t high_duty, uint32_t time_ms, uint8_t direction){
       uint16_t low_duty = 1000 - high_duty;
 
       //my way of pwm
-      uint32_t pwm_rate = time_ms;
-      uint32_t us_block = (time_ms / pwm_rate) * 1000;
-      float duty_time = high_duty * 1.0 / ((low_duty + high_duty) * 1.0);
-      uint32_t wait_time_high = us_block * duty_time;
+    //   uint32_t pwm_rate = time_ms;
+    //   uint32_t us_block = (time_ms / pwm_rate) * 1000;
+    //   float duty_time = high_duty * 1.0 / ((low_duty + high_duty) * 1.0);
+    //   uint32_t wait_time_high = us_block * duty_time;
 
-      #ifdef debug_motor
-        printf("low_duty: %d\n", low_duty);
-        printf("high_duty:%d\n", high_duty);
-        printf("duty_time: %f\n", duty_time);
-        printf("us_block: %d\n", us_block);
-      #endif
+    //   #ifdef debug_motor
+    //     printf("low_duty: %d\n", low_duty);
+    //     printf("high_duty:%d\n", high_duty);
+    //     printf("duty_time: %f\n", duty_time);
+    //     printf("us_block: %d\n", us_block);
+    //   #endif
 
-      for (i = 0; i < pwm_rate; i++){
-        mtr_dir_direction(direction);
-        SysTick_Wait1us(wait_time_high);
-        Motor_Stop_us(us_block - wait_time_high);
-      }
-    
-      //teacher way
-    //   for (i = 0; i < time_ms; i++){
-    //     mtr_dir_direction(direction);
-    //     SysTick_Wait1us(1);
-    //     P2->OUT &= ~0xC0;
-    //     SysTick_Wait1us(1);
-    //     SysTick_Wait(1);
+    //   for (i = 0; i < pwm_rate; i++){
+    //     mtr_out_control(direction);
+    //     Clock_Delay1us(wait_time_high);
+    //     mtr_out_control(STOP);
+    //     Clock_Delay1us(us_block - wait_time_high);
     //   }
+    
+      //hint way
+      for (i = 0; i < time_ms; i++){
+        mtr_out_control(direction);
+        Clock_Delay1us(high_duty);
+        mtr_out_control(STOP);
+        Clock_Delay1us(low_duty);
+      }
+
+      SysTick_Wait(1);
 }
 
 void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms){
+    //init
+    Motor_Stop();
+    //set dir
+    mtr_dir_direction(FORWARD);
+    //loop
 	mtr_pwm_loop(duty, time_ms, FORWARD);
-    Motor_Stop_us(10);
+    //stop
+    Motor_Stop();
+    //sys delay
+    SysTick_Wait(1);
 }
 void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms){
+    Motor_Stop();
+    mtr_dir_direction(BACKWARD);
 	mtr_pwm_loop(duty, time_ms, BACKWARD);
-    Motor_Stop_us(10);
+    Motor_Stop();
+    SysTick_Wait(1);
 }
 void Motor_LeftSimple(uint16_t duty, uint32_t time_ms){
+    Motor_Stop();
+    mtr_dir_direction(LEFT_FORWARD);
 	mtr_pwm_loop(duty, time_ms, LEFT_FORWARD);
-    Motor_Stop_us(10);
+    Motor_Stop();
+    SysTick_Wait(1);
 }
 void Motor_RightSimple(uint16_t duty, uint32_t time_ms){
+    Motor_Stop();
+    mtr_dir_direction(RIGHT_FORWARD);
 	mtr_pwm_loop(duty, time_ms, RIGHT_FORWARD);
-    Motor_Stop_us(10);
+    Motor_Stop();
+    SysTick_Wait(1);
 }
 
 /*
