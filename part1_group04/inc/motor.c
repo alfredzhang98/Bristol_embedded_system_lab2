@@ -79,7 +79,6 @@ void Motor_StopSimple(uint32_t time_ms){
 
 /*
 	Section: mtr_dir_rgt
-	Description: this section is used to turn right of motors
 	Port & pin : direction of the left and right motors
 	Tips       : for both direction and output, '1' = forward, '0' = backward
 	TODO       : finish this section
@@ -94,47 +93,36 @@ void Motor_StopSimple(uint32_t time_ms){
 void mtr_dir_direction(uint8_t direction){
     switch(direction){
         case STOP:
+            P1 -> DIR &= ~0xC0;
             P1 -> OUT &= ~0xC0;
             break;
         case BACKWARD:
-            P1 -> OUT = (P1 -> OUT & 0x3F) | 0x00;
+            P1 -> DIR |= 0x00;
+            P1 -> OUT |= 0x00;
             break;
         case FORWARD:
-            P1 -> OUT = (P1 -> OUT & 0x3F) | 0xC0;
+            P1 -> DIR |= 0xC0;
+            P1 -> OUT |= 0xC0;
             break;
-        case LEFT_FORWARD:
-            P1 -> OUT = (P1 -> OUT & 0x3F) | 0x40;
+        case LEFT:
+            P1 -> DIR |= 0x40;
+            P1 -> OUT |= 0x40;
             break;
-        case RIGHT_FORWARD:
-            P1 -> OUT = (P1 -> OUT & 0x3F) | 0x80;
+        case RIGHT:
+            P1 -> DIR |= 0x80;
+            P1 -> OUT |= 0x80;
             break;
         default:
             printf("Wrong direction\n");
     }
-    SysTick_Wait1us(10);
 }
 
 void mtr_out_control(uint8_t direction){
-    switch(direction){
-        case STOP:
-            P2 -> OUT &= ~0xC0;
-            break;
-        case BACKWARD:
-            P2 -> OUT = (P2 -> OUT & 0x3F) | 0xC0;
-            break;
-        case FORWARD:
-            P2 -> OUT = (P2 -> OUT & 0x3F) | 0xC0;
-            break;
-        case LEFT_FORWARD:
-            P2 -> OUT = (P2 -> OUT & 0x3F) | 0x40;
-            break;
-        case RIGHT_FORWARD:
-            P2 -> OUT = (P2 -> OUT & 0x3F) | 0x80;
-            break;
-        default:
-            printf("Wrong out\n");
+    if(direction == STOP){
+        P2 -> OUT &= ~0xC0;
+    }else{
+        P2 -> OUT |= 0xC0;
     }
-    SysTick_Wait1us(10);  
 }
 
 /*
@@ -192,7 +180,6 @@ void mtr_pwm_loop(uint16_t high_duty, uint32_t time_ms, uint8_t direction){
             Clock_Delay1us(low_duty);
         }
       }
-      SysTick_Wait(1);
 }
 
 void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms){
@@ -216,32 +203,32 @@ void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms){
 }
 void Motor_LeftSimple(uint16_t duty, uint32_t time_ms){
     Motor_Stop();
-    mtr_dir_direction(LEFT_FORWARD);
-	mtr_pwm_loop(duty, time_ms, LEFT_FORWARD);
+    mtr_dir_direction(LEFT);
+	mtr_pwm_loop(duty, time_ms, LEFT);
     Motor_Stop();
     SysTick_Wait(1);
 }
 void Motor_RightSimple(uint16_t duty, uint32_t time_ms){
     Motor_Stop();
-    mtr_dir_direction(RIGHT_FORWARD);
-	mtr_pwm_loop(duty, time_ms, RIGHT_FORWARD);
+    mtr_dir_direction(RIGHT);
+	mtr_pwm_loop(duty, time_ms, RIGHT);
     Motor_Stop();
     SysTick_Wait(1);
 }
 
 /*
-    turn: 0x02 LEFT_FORWARD, 0x03 RIGHT_FORWARD
+    turn: 0x02 LEFT, 0x03 RIGHT
 */
 void Motor_Degree(uint8_t turn, uint16_t degree){
     //round duty
-    uint16_t round_duty = 500;
+    uint16_t round_duty = 200;
     //whole circle round take us
     uint32_t whole_round_us = 1000;
     float percent_round = (degree * 1.0) / (360 * 1.0);
     uint32_t time_round = percent_round * whole_round_us;
-    if(turn == LEFT_FORWARD){
+    if(turn == LEFT){
         Motor_LeftSimple(round_duty, time_round);
-    }else if(turn == RIGHT_FORWARD){
+    }else if(turn == RIGHT){
         Motor_RightSimple(round_duty, time_round);
     }else{
         printf("Wrong turn\n");

@@ -39,8 +39,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define STOP             0x00
 #define BACKWARD         0x01
 #define FORWARD          0x02
-#define LEFT_FORWARD     0x03
-#define RIGHT_FORWARD    0x04
+#define LEFT             0x03
+#define RIGHT            0x04
 
 void Motor_InitSimple(void);
 void Motor_Stop();
