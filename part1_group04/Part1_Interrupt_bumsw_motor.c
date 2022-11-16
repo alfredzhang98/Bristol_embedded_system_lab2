@@ -61,7 +61,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define SKYBLUE   0x06
 #define WHITE     0x07
 
-#define DEBUG_MAIN
+//#define DEBUG_MAIN
 
 #define MODE_NONE    0xFF
 #define MODE_DEFAULT 0x00
@@ -198,6 +198,11 @@ void PORT4_IRQHandler(void){
 //    void Motor_LeftSimple(uint16_t duty, uint32_t time_ms);
 //    void Motor_RightSimple(uint16_t duty, uint32_t time_ms);
 //    void Motor_Degree(uint8_t turn, uint16_t degree);
+    if(mode == MODE_SW1){
+        mode = MODE_DEFAULT;
+        Motor_StopSimple(100);
+    }
+
     if(mode == MODE_SW2){
       switch(status){
       //=========Group 04============
@@ -434,7 +439,7 @@ int main(void){
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
 //  Port2_Output(WHITE);      // White is the colour to represent moving forward
   Motor_InitSimple();       // Initialise DC Motor
-//  Motor_StopSimple(100);    // Stop the motor on initial state
+  Motor_StopSimple(100);    // Stop the motor on initial state
 
   EnableInterrupts();       // Clear the I bit
 
@@ -446,17 +451,18 @@ int main(void){
 
       switch(mode){
       case MODE_DEFAULT:
-          printf("mode: MODE_DEFAULT");
+          SysTick_Wait(100);
           break;
       case MODE_SW1:
           printf("mode: MODE_SW1");
           //gourp04 route
           Motor_Route();
-
+          break;
       case MODE_SW2:
           printf("mode: MODE_SW2");
           //keep forward
-          Motor_ForwardSimple(500,50);
+          Motor_KeepForward();
+          break;
       }
 
 //====================================================================================================================================================================

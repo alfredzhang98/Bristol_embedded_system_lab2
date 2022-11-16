@@ -1,1 +1,6 @@
-2022/11/16-12:52:04.423 35c8 Reusing MANIFEST C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Site Characteristics Database/MANIFEST-000001
+2022/11/16-16:47:07.490 3720 Log #6: 1 ops saved to Table #7 OK
+2022/11/16-16:47:07.491 3720 Archiving C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Site Characteristics Database/000006.log: OK
+2022/11/16-16:47:07.494 3720 Table #4: 2 entries OK
+2022/11/16-16:47:07.494 3720 Table #7: 1 entries OK
+2022/11/16-16:47:07.498 3720 Archiving C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Site Characteristics Database/MANIFEST-000001: OK
+2022/11/16-16:47:07.505 3720 **** Repaired leveldb C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Site Characteristics Database; recovered 2 files; 353 bytes. Some data may have been lost. ****

@@ -45,6 +45,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 void Motor_InitSimple(void);
 void Motor_Stop();
 void Motor_StopSimple(uint32_t time_ms);
+void Motor_KeepForward(void);
 void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms);
 void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms);
 void Motor_LeftSimple(uint16_t duty, uint32_t time_ms);

@@ -181,6 +181,11 @@ void mtr_pwm_loop(uint16_t high_duty, uint32_t time_ms, uint8_t direction){
         }
       }
 }
+void Motor_KeepForward(void){
+    Motor_Stop();
+    mtr_dir_direction(FORWARD);
+    mtr_out_control(FORWARD);
+}
 
 void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms){
     //init
