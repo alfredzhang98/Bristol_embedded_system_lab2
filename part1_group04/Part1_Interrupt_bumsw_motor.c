@@ -61,27 +61,13 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define SKYBLUE   0x06
 #define WHITE     0x07
 
-//#define DEBUG_MAIN
-
 #define MODE_NONE    0xFF
 #define MODE_DEFAULT 0x00
 #define MODE_SW1     0x01
 #define MODE_SW2     0x02
 
-//#define MODE_SW2_NONE   0x00
-//#define MODE_SW2_LEFT_SHORT   0x01
-//#define MODE_SW2_LEFT_LONG    0x02
-//#define MODE_SW2_RIGHT_SHORT  0x03
-//#define MODE_SW2_RIGHT_LONG   0x04
-//#define MODE_SW2_FACE         0x05
-
 //global v
-uint8_t current_mode = MODE_NONE;
 uint8_t mode = MODE_DEFAULT;
-//uint8_t count1 = 0;
-//uint8_t count2 = 0;
-//uint8_t bump_rect = MODE_SW2_NONE;
-
 
 // Initialize SW1/SW2 using interrupt
 // Make six from Port 4 input pins
@@ -125,38 +111,26 @@ void BumpEdgeTrigger_Init(void){
 void PORT1_IRQHandler(void){
     uint8_t status;
     status = P1->IV;
-
-#ifdef DEBUG_MAIN
-    printf("status: %d\n", status);
-#endif
-
     switch(status){
     //SW1 0x04
     case 0x04:
+        if(mode != MODE_SW1){ 
+            //reset the motor
+            Motor_InitSimple(); 
+            Motor_StopSimple(100);
+        }
         mode = MODE_SW1;
-//        count1 ++;
-//        if(count1 > 2){
-//            mode = MODE_SW1;
-//            count1 = 0;
-//        }
         break;
     //SW2 0x0A
     case 0x0A:
-        mode = MODE_SW2;
-//        count2++;
-//        if(count2 > 2){
-//            mode = MODE_SW2;
-//            count2 = 0;
-//        }
+        if(mode != MODE_SW2){ 
+            //reset the motor
+            Motor_InitSimple(); 
+            Motor_StopSimple(100);
+        }
+        mode = MODE_SW2;  
         break;
     }
-
-    //SW1 and SW2 press same time and then stop the motor and back to default mode
-//    if(count1 > 2 && count2 > 2){
-//        mode = MODE_DEFAULT;
-//        Motor_Stop();
-//    }
-
     P1->IFG &= ~0xED; // clear flag
 }
 
@@ -200,9 +174,9 @@ void PORT4_IRQHandler(void){
 //    void Motor_Degree(uint8_t turn, uint16_t degree);
     if(mode == MODE_SW1){
         mode = MODE_DEFAULT;
+        Motor_InitSimple(); 
         Motor_StopSimple(100);
     }
-
     if(mode == MODE_SW2){
       switch(status){
       //=========Group 04============
@@ -322,7 +296,6 @@ void PORT4_IRQHandler(void){
           break;
       }
     }
-
     P4->IFG &= ~0xED; // clear flag
 }
 
@@ -425,23 +398,25 @@ int main(void){
   SysTick_Init();           // Initialise SysTick timer
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
 
-//  while(!SW2IN){            // Wait for SW2 switch
-//      SysTick_Wait10ms(10); // Wait here for every 100ms
-//      REDLED = !REDLED;     // The red LED is blinking waiting for command
-//  }
   REDLED = 0;               // Turn off the red LED
 
   //  Switch_Init();        // Initialise switches
-  SWEdgeTrigger_Init();     //
+  SWEdgeTrigger_Init();     // Initialise Switches to interrupt
 
   BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
 
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
 //  Port2_Output(WHITE);      // White is the colour to represent moving forward
+
   Motor_InitSimple();       // Initialise DC Motor
   Motor_StopSimple(100);    // Stop the motor on initial state
 
   EnableInterrupts();       // Clear the I bit
+
+//  while(!SW2IN){            // Wait for SW2 switch
+//      SysTick_Wait10ms(10); // Wait here for every 100ms
+//      REDLED = !REDLED;     // The red LED is blinking waiting for command
+//  }
 
   // Run forever
   while(1){
@@ -454,14 +429,16 @@ int main(void){
           SysTick_Wait(100);
           break;
       case MODE_SW1:
-          printf("mode: MODE_SW1");
+          printf("mode: MODE_SW1\n");
           //gourp04 route
+          //Question: the motor function take too much time, if we have other function needed to do, i think this way of programming is not a way.
           Motor_Route();
           break;
       case MODE_SW2:
-          printf("mode: MODE_SW2");
+          printf("mode: MODE_SW2\n");
           //keep forward
-          Motor_KeepForward();
+          //Motor_KeepForwardFullSpeed();
+          Motor_ForwardSimple(500,100);
           break;
       }
 

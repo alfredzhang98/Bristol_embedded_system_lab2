@@ -181,7 +181,9 @@ void mtr_pwm_loop(uint16_t high_duty, uint32_t time_ms, uint8_t direction){
         }
       }
 }
-void Motor_KeepForward(void){
+
+
+void Motor_KeepForwardFullSpeed(void){
     Motor_Stop();
     mtr_dir_direction(FORWARD);
     mtr_out_control(FORWARD);
@@ -240,6 +242,9 @@ void Motor_Degree(uint8_t turn, uint16_t degree){
     }
 }
 
+/*
+    user route
+*/
 void Motor_Route(){
       Motor_ForwardSimple(500,500);
       Clock_Delay1ms(500);
