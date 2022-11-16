@@ -50,5 +50,6 @@ void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms);
 void Motor_LeftSimple(uint16_t duty, uint32_t time_ms);
 void Motor_RightSimple(uint16_t duty, uint32_t time_ms);
 void Motor_Degree(uint8_t turn, uint16_t degree);
+void Motor_Route();
 
 #endif

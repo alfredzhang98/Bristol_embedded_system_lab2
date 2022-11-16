@@ -61,7 +61,46 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define SKYBLUE   0x06
 #define WHITE     0x07
 
+#define DEBUG_MAIN
 
+#define MODE_NONE    0xFF
+#define MODE_DEFAULT 0x00
+#define MODE_SW1     0x01
+#define MODE_SW2     0x02
+
+//#define MODE_SW2_NONE   0x00
+//#define MODE_SW2_LEFT_SHORT   0x01
+//#define MODE_SW2_LEFT_LONG    0x02
+//#define MODE_SW2_RIGHT_SHORT  0x03
+//#define MODE_SW2_RIGHT_LONG   0x04
+//#define MODE_SW2_FACE         0x05
+
+//global v
+uint8_t current_mode = MODE_NONE;
+uint8_t mode = MODE_DEFAULT;
+//uint8_t count1 = 0;
+//uint8_t count2 = 0;
+//uint8_t bump_rect = MODE_SW2_NONE;
+
+
+// Initialize SW1/SW2 using interrupt
+// Make six from Port 4 input pins
+// Activate interface pull-up
+// The pins are P1.7,P1.6
+void SWEdgeTrigger_Init(void){
+    P1->SEL0 &= ~0x12;
+    P1->SEL1 &= ~0x12;      // configure as GPIO
+    P1->DIR &= ~0x12;       // make in
+    P1->REN |= 0x12;        // enable pull resistors
+    P1->OUT |= 0x12;        // pull-up
+    P1->IES |= 0x12;        // falling edge event
+    P1->IFG &= ~0x12;       // clear flag
+    P1->IE |= 0x12;         // arm the interrupt
+    // priority 2 on port1
+    NVIC->IP[9] = (NVIC->IP[9]&0xFF00FFFF)|0x00400000;
+    // enable interrupt 35 in NVIC on port1
+    NVIC->ISER[1] = 0x00000008;
+}
 
 // Initialize Bump sensors using interrupt
 // Make six from Port 4 input pins
@@ -82,6 +121,45 @@ void BumpEdgeTrigger_Init(void){
     NVIC->ISER[1] = 0x00000040;
 }
 
+//port1 interrupt
+void PORT1_IRQHandler(void){
+    uint8_t status;
+    status = P1->IV;
+
+#ifdef DEBUG_MAIN
+    printf("status: %d\n", status);
+#endif
+
+    switch(status){
+    //SW1 0x04
+    case 0x04:
+        mode = MODE_SW1;
+//        count1 ++;
+//        if(count1 > 2){
+//            mode = MODE_SW1;
+//            count1 = 0;
+//        }
+        break;
+    //SW2 0x0A
+    case 0x0A:
+        mode = MODE_SW2;
+//        count2++;
+//        if(count2 > 2){
+//            mode = MODE_SW2;
+//            count2 = 0;
+//        }
+        break;
+    }
+
+    //SW1 and SW2 press same time and then stop the motor and back to default mode
+//    if(count1 > 2 && count2 > 2){
+//        mode = MODE_DEFAULT;
+//        Motor_Stop();
+//    }
+
+    P1->IFG &= ~0xED; // clear flag
+}
+
 // Uses P4IV IRQ handler to solve critical section/race
 void PORT4_IRQHandler(void){
 
@@ -95,7 +173,7 @@ void PORT4_IRQHandler(void){
     Port2_Output(0);        // turn off the coloured LED
 
     // Interrupt Vector of Port4
-      status = P4->IV;      // 2*(n+1) where n is highest priority
+    status = P4->IV;      // 2*(n+1) where n is highest priority
 
 	  // The case used are the interrupt vector of P4->IV
 	  // For example, the bump switch 3 is connected to P4.3
@@ -109,156 +187,138 @@ void PORT4_IRQHandler(void){
 	  // in hex = 0x08
 	  // (*NOTE: in this code only bump switch 3 has been calculated,
 	  //         please figure out the other bump switches)
+//#define MODE_SW2_NONE   0x00
+//#define MODE_SW2_LEFT_SHORT   0x01
+//#define MODE_SW2_LEFT_LONG    0x02
+//#define MODE_SW2_RIGHT_SHORT  0x03
+//#define MODE_SW2_RIGHT_LONG   0x04
+//#define MODE_SW2_FACE         0x05
+//    void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms);
+//    void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms);
+//    void Motor_LeftSimple(uint16_t duty, uint32_t time_ms);
+//    void Motor_RightSimple(uint16_t duty, uint32_t time_ms);
+//    void Motor_Degree(uint8_t turn, uint16_t degree);
+    if(mode == MODE_SW2){
       switch(status){
-//=========Group 04============
-// Bump switch 1,Bump switch 2,Bump switch 3 on the right of the car
-// Bump switch 4,Bump switch 5,Bump switch 6 on the right of the car
+      //=========Group 04============
+      // Bump switch 1,Bump switch 2,Bump switch 3 on the right of the car
+      // Bump switch 4,Bump switch 5,Bump switch 6 on the left of the car
+
         case 0x02: // Bump switch 1 P4.0
-
-        if (number = 1)   number = 0;//task 1
-        if (number = 2)   number = 3;//task 2 - turn left
-
-
-            Port2_Output(YELLOW);
-		
-            __no_operation();
-
             // Change the coloured LED into green (backward)
-			
+            Port2_Output(GREEN);
             // Move backward at 500 duty for 200ms
-            
+            Motor_BackwardSimple(500,200);
 			// turn off the coloured LED
-            
+            Port2_Output(0);
             // Stop for 1000ms
-            
+            Clock_Delay1ms(1000);
 			// Change the coloured LED into yellow (turn left)
-            
+            Port2_Output(YELLOW);
             // Make a left turn at 500 duty for 100ms
-            
+            Motor_LeftSimple(500,100);
 			// turn off the coloured LED
-            
+            Port2_Output(0);
             // Stop for 1000ms
-            
+            Clock_Delay1ms(1000);
           break;
         case 0x06: // Bump switch 2 P4.2 6
-
-        if (number = 1)   number = 0;//task 1
-        if (number = 2)   number = 3;//task 2 - turn left
-
-            printf("TEST2\n");
-            Port2_Output(SKYBLUE);
-		
             // Change the coloured LED into green (backward)
-			
+            Port2_Output(GREEN);
             // Move backward at 500 duty for 200ms
-            
+            Motor_BackwardSimple(500,200);
 			// turn off the coloured LED
-            
+            Port2_Output(0);
             // Stop for 1000ms
-            
+            Clock_Delay1ms(1000);
 			// Change the coloured LED into yellow (turn left)
-            
+            Port2_Output(YELLOW);
             // Make a left turn at 500 duty for 200ms
-            
+            Motor_LeftSimple(500,200);
 			// turn off the coloured LED
-            
+            Port2_Output(0);
             // Stop for 1000ms
-			
+            Clock_Delay1ms(1000);
           break;
         case 0x08: // Bump switch 3 P4.3 8
-
-        if (number = 1)   number = 0;//task 1
-        if (number = 2)   number = 3;//task 2 - turn left
-
             // Change the coloured LED into green (backward)
-			
+            Port2_Output(GREEN);
             // Move backward at 500 duty for 200ms
-            
+            Motor_BackwardSimple(500,200);
 			// turn off the coloured LED
-            
+            Port2_Output(0);
             // Stop for 1000ms
-            
+            Clock_Delay1ms(1000);
 			// Change the coloured LED into yellow (turn left)
-            
+            Port2_Output(YELLOW);
             // Make a left turn at 500 duty for 300ms
-            
-			// turn off the coloured LED
-            
+            Motor_LeftSimple(500,300);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-			
+            Clock_Delay1ms(1000);
           break;
         case 0x0C: // Bump switch 4 P4.5 12
-
-        if (number = 1)   number = 0;//task 1
-        if (number = 2)   number = 4;//task 2 - turn right
-		
             // Change the coloured LED into green (backward)
-			
+            Port2_Output(GREEN);
             // Move backward at 500 duty for 200ms
-            
-			// turn off the coloured LED
-            
+            Motor_BackwardSimple(500,200);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-            
+            Clock_Delay1ms(1000);
 			// Change the coloured LED into blue (turn right)
-            
-            // Make a left turn at 500 duty for 300ms
-            
-			// turn off the coloured LED
-            
+            Port2_Output(BLUE);
+            // Make a right turn at 500 duty for 300ms
+            Motor_RightSimple(500,300);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-			
+            Clock_Delay1ms(1000);
           break;
         case 0x0E: // Bump switch 5 P4.6 14
-
-        if (number = 1)   number = 0;//task 1
-        if (number = 2)   number = 4;//task 2 - turn right
-		
             // Change the coloured LED into green (backward)
-			
+            Port2_Output(GREEN);
             // Move backward at 500 duty for 200ms
-            
-			// turn off the coloured LED
-            
+            Motor_BackwardSimple(500,200);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-            
-			// Change the coloured LED into blue (turn right)
-            
-            // Make a left turn at 500 duty for 200ms
-            
-			// turn off the coloured LED
-            
+            Clock_Delay1ms(1000);
+            // Change the coloured LED into blue (turn right)
+            Port2_Output(BLUE);
+            // Make a right turn at 500 duty for 200ms
+            Motor_RightSimple(500,200);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-			
+            Clock_Delay1ms(1000);
           break;
         case 0x10: // Bump switch 6 P4.7 16
-
-        if (number = 1)   number = 0;//task 1
-        if (number = 2)   number = 4;//task 2 - turn right
-
             // Change the coloured LED into green (backward)
-			
+            Port2_Output(GREEN);
             // Move backward at 500 duty for 200ms
-            
-			// turn off the coloured LED
-            
+            Motor_BackwardSimple(500,200);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-            
-			// Change the coloured LED into blue (turn right)
-            
-            // Make a left turn at 500 duty for 100ms
-            
-			// turn off the coloured LED
-            
+            Clock_Delay1ms(1000);
+            // Change the coloured LED into blue (turn right)
+            Port2_Output(BLUE);
+            // Make a right turn at 500 duty for 300ms
+            Motor_RightSimple(500,100);
+            // turn off the coloured LED
+            Port2_Output(0);
             // Stop for 1000ms
-			
+            Clock_Delay1ms(1000);
           break;
 
         case 0xED: // none of the switches are pressed
           break;
       }
+    }
 
-      P4->IFG &= ~0xED; // clear flag
+    P4->IFG &= ~0xED; // clear flag
 }
 
 // Read current state of 6 switches
@@ -354,17 +414,21 @@ void Switch_Init(void){
 #define REDLED (*((volatile uint8_t *)(0x42098040)))    // output: red LED
 
 int main(void){
-  uint8_t status;
-  uint8_t number; // Define global value
+//  uint8_t status;
+
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
-  Switch_Init();            // Initialise switches
   SysTick_Init();           // Initialise SysTick timer
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
+
 //  while(!SW2IN){            // Wait for SW2 switch
 //      SysTick_Wait10ms(10); // Wait here for every 100ms
 //      REDLED = !REDLED;     // The red LED is blinking waiting for command
 //  }
   REDLED = 0;               // Turn off the red LED
+
+  //  Switch_Init();        // Initialise switches
+  SWEdgeTrigger_Init();     //
+
   BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
 
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
@@ -376,41 +440,41 @@ int main(void){
 
   // Run forever
   while(1){
-  //============Group 04 start==============
-  if (SW1IN = 0)
-    number = 1;
-  if (SW2IN = 0)
-    number = 2;
+//#define MODE_DEFAULT 0x00
+//#define MODE_SW1     0x01
+//#define MODE_SW2     0x02
 
-  if (number = 1)
-  {
-    Motor_ForwardSimple(500, 80); Motor_LeftSimple(500, 20);//predefined route
-  }
-  if (number = 2)
-    Motor_ForwardSimple(500, 100);
+      switch(mode){
+      case MODE_DEFAULT:
+          printf("mode: MODE_DEFAULT");
+          break;
+      case MODE_SW1:
+          printf("mode: MODE_SW1");
+          //gourp04 route
+          Motor_Route();
 
-  if (number = 3)
-  {
-    Motor_BackwardSimple(500,500); Motor_LeftSimple(500,500); number = 2;// backward + turn left + forward
-  }
+      case MODE_SW2:
+          printf("mode: MODE_SW2");
+          //keep forward
+          Motor_ForwardSimple(500,50);
+      }
 
-  if (number = 4)
-  {
-    otor_BackwardSimple(500,500); Motor_RightSimple(500,500); number = 2;// backward + turn right + forward
-  }
+//====================================================================================================================================================================
+//==================================================================================Group 04 =========================================================================
+//====================================================================================================================================================================
 
- //============Group 04 end==============
+
+
+
 
 
 	// This section is used for Example 1 (seciton 5.8.1)
-//    __no_operation();		// the code will run without operation
+//     __no_operation();		// the code will run without operation
 
 
 
     // This section is used for Example 2 (section 5.8.2)
 
-      Motor_ForwardSimple(500,1000);
-      SysTick_Wait(1000);
 //        status = Bump_Read_Input();
 //        if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
 //            checkbumpswitch(status);
@@ -421,9 +485,9 @@ int main(void){
 		// Move forward with 500 duty but can run with any number for time_ms,
 		// in this case, the robot will move infinitely because of the while loop,
 		// (although the time_ms used is 1)
-	/*
-		Motor_ForwardSimple(500, 1);
-	*/
+
+//		Motor_ForwardSimple(500, 1);
+
 
   }
 }

@@ -97,20 +97,20 @@ void mtr_dir_direction(uint8_t direction){
             P1 -> OUT &= ~0xC0;
             break;
         case BACKWARD:
-            P1 -> DIR |= 0x00;
-            P1 -> OUT |= 0x00;
-            break;
-        case FORWARD:
             P1 -> DIR |= 0xC0;
             P1 -> OUT |= 0xC0;
             break;
-        case LEFT:
-            P1 -> DIR |= 0x40;
-            P1 -> OUT |= 0x40;
+        case FORWARD:
+            P1 -> DIR |= 0x00;
+            P1 -> OUT |= 0x00;
             break;
-        case RIGHT:
+        case LEFT:
             P1 -> DIR |= 0x80;
             P1 -> OUT |= 0x80;
+            break;
+        case RIGHT:
+            P1 -> DIR |= 0x40;
+            P1 -> OUT |= 0x40;
             break;
         default:
             printf("Wrong direction\n");
@@ -150,7 +150,7 @@ void mtr_pwm_loop(uint16_t high_duty, uint32_t time_ms, uint8_t direction){
       if(high_duty > 1000){
         printf("Wrong duty input\n");
       }else{
-        low_duty =  = 1000 - high_duty;
+        low_duty = 1000 - high_duty;
 
         //my way of pwm
         // uint32_t pwm_rate = time_ms;
@@ -223,7 +223,7 @@ void Motor_Degree(uint8_t turn, uint16_t degree){
     //round duty
     uint16_t round_duty = 200;
     //whole circle round take us
-    uint32_t whole_round_us = 1000;
+    uint32_t whole_round_us = 5800;
     float percent_round = (degree * 1.0) / (360 * 1.0);
     uint32_t time_round = percent_round * whole_round_us;
     if(turn == LEFT){
@@ -233,4 +233,18 @@ void Motor_Degree(uint8_t turn, uint16_t degree){
     }else{
         printf("Wrong turn\n");
     }
+}
+
+void Motor_Route(){
+      Motor_ForwardSimple(500,500);
+      Clock_Delay1ms(500);
+      Motor_BackwardSimple(500,500);
+      Clock_Delay1ms(500);
+      Motor_LeftSimple(1000,200);
+      Clock_Delay1ms(500);
+      Motor_Degree(LEFT, 90);
+      Clock_Delay1ms(500);
+      Motor_RightSimple(1000,200);
+      Clock_Delay1ms(500);
+      Motor_Degree(RIGHT, 90);
 }
