@@ -62,6 +62,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define WHITE     0x07
 
 
+
 // Initialize Bump sensors using interrupt
 // Make six from Port 4 input pins
 // Activate interface pull-up
@@ -109,8 +110,14 @@ void PORT4_IRQHandler(void){
 	  // (*NOTE: in this code only bump switch 3 has been calculated,
 	  //         please figure out the other bump switches)
       switch(status){
+//=========Group 04============
+// Bump switch 1,Bump switch 2,Bump switch 3 on the right of the car
+// Bump switch 4,Bump switch 5,Bump switch 6 on the right of the car
+        case 0x02: // Bump switch 1 P4.0
 
-        case 0x02: // Bump switch 1
+        if (number = 1)   number = 0;//task 1
+        if (number = 2)   number = 3;//task 2 - turn left
+
 
             Port2_Output(YELLOW);
 		
@@ -133,7 +140,10 @@ void PORT4_IRQHandler(void){
             // Stop for 1000ms
             
           break;
-        case 0x06: // Bump switch 2
+        case 0x06: // Bump switch 2 P4.2 6
+
+        if (number = 1)   number = 0;//task 1
+        if (number = 2)   number = 3;//task 2 - turn left
 
             printf("TEST2\n");
             Port2_Output(SKYBLUE);
@@ -155,7 +165,10 @@ void PORT4_IRQHandler(void){
             // Stop for 1000ms
 			
           break;
-        case 0x08: // Bump switch 3
+        case 0x08: // Bump switch 3 P4.3 8
+
+        if (number = 1)   number = 0;//task 1
+        if (number = 2)   number = 3;//task 2 - turn left
 
             // Change the coloured LED into green (backward)
 			
@@ -174,7 +187,10 @@ void PORT4_IRQHandler(void){
             // Stop for 1000ms
 			
           break;
-        case 0x0C: // Bump switch 4
+        case 0x0C: // Bump switch 4 P4.5 12
+
+        if (number = 1)   number = 0;//task 1
+        if (number = 2)   number = 4;//task 2 - turn right
 		
             // Change the coloured LED into green (backward)
 			
@@ -193,7 +209,10 @@ void PORT4_IRQHandler(void){
             // Stop for 1000ms
 			
           break;
-        case 0x0E: // Bump switch 5
+        case 0x0E: // Bump switch 5 P4.6 14
+
+        if (number = 1)   number = 0;//task 1
+        if (number = 2)   number = 4;//task 2 - turn right
 		
             // Change the coloured LED into green (backward)
 			
@@ -212,7 +231,10 @@ void PORT4_IRQHandler(void){
             // Stop for 1000ms
 			
           break;
-        case 0x10: // Bump switch 6
+        case 0x10: // Bump switch 6 P4.7 16
+
+        if (number = 1)   number = 0;//task 1
+        if (number = 2)   number = 4;//task 2 - turn right
 
             // Change the coloured LED into green (backward)
 			
@@ -332,8 +354,8 @@ void Switch_Init(void){
 #define REDLED (*((volatile uint8_t *)(0x42098040)))    // output: red LED
 
 int main(void){
-    uint8_t status;
-
+  uint8_t status;
+  uint8_t number; // Define global value
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
   Switch_Init();            // Initialise switches
   SysTick_Init();           // Initialise SysTick timer
@@ -354,6 +376,31 @@ int main(void){
 
   // Run forever
   while(1){
+  //============Group 04 start==============
+  if (SW1IN = 0)
+    number = 1;
+  if (SW2IN = 0)
+    number = 2;
+
+  if (number = 1)
+  {
+    Motor_ForwardSimple(500, 80); Motor_LeftSimple(500, 20);//predefined route
+  }
+  if (number = 2)
+    Motor_ForwardSimple(500, 100);
+
+  if (number = 3)
+  {
+    Motor_BackwardSimple(500,500); Motor_LeftSimple(500,500); number = 2;// backward + turn left + forward
+  }
+
+  if (number = 4)
+  {
+    otor_BackwardSimple(500,500); Motor_RightSimple(500,500); number = 2;// backward + turn right + forward
+  }
+
+ //============Group 04 end==============
+
 
 	// This section is used for Example 1 (seciton 5.8.1)
 //    __no_operation();		// the code will run without operation
