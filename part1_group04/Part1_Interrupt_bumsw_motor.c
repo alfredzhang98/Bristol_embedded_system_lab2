@@ -69,6 +69,21 @@ policies, either expressed or implied, of the FreeBSD Project.
 //global v
 uint8_t mode = MODE_DEFAULT;
 
+
+////PWM timer
+//void PWM_init(uint16_t period, uint16_t duty1, uint16_t duty2){
+//    P2 -> DIR |= 0x030;
+//    P2 -> SEL0 |= 0x030;
+//    P2 -> SEL1 |= 0x030;
+//    TIMER_A0 -> CCTL[0] |= 0x030;
+//    TIMER_A0 -> DIR |= 0x030;
+//    TIMER_A0 -> DIR |= 0x030;
+//    TIMER_A0 -> DIR |= 0x030;
+//    TIMER_A0 -> DIR |= 0x030;
+//
+//}
+
+
 // Initialize SW1/SW2 using interrupt
 // Make six from Port 4 input pins
 // Activate interface pull-up
@@ -323,8 +338,6 @@ void checkbumpswitch(uint8_t status)
     switch(status){
       //case 0x02: // Bump switch 1 (for interrupt vector)
         case 0x6D: // Bump 1
-            Motor_ForwardSimple(500,1000);
-//          Motor_BackwardSimple(500, 100); 	// Move backward at 500 duty for 200ms
 
         break;
       //case 0x06: // Bump switch 2 (for interrupt vector)
@@ -392,7 +405,7 @@ void Switch_Init(void){
 #define REDLED (*((volatile uint8_t *)(0x42098040)))    // output: red LED
 
 int main(void){
-//  uint8_t status;
+  uint8_t status;
 
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
   SysTick_Init();           // Initialise SysTick timer
@@ -424,6 +437,8 @@ int main(void){
 //#define MODE_SW1     0x01
 //#define MODE_SW2     0x02
 
+      //manual loop interrupts
+      __no_operation();
       switch(mode){
       case MODE_DEFAULT:
           SysTick_Wait(100);
@@ -448,21 +463,18 @@ int main(void){
 
 
 
-
-
-
 	// This section is used for Example 1 (seciton 5.8.1)
-//     __no_operation();		// the code will run without operation
+//    __no_operation();      // the code will run without operation
 
+//    // This section is used for Example 2 (section 5.8.2)
+//
+//    status = Bump_Read_Input();
+//    if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
+//        checkbumpswitch(status);
+//    }
 
+//
 
-    // This section is used for Example 2 (section 5.8.2)
-
-//        status = Bump_Read_Input();
-//        if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
-//            checkbumpswitch(status);
-//        }
-	
 
 	// This section is used for Example 3 (section 5.8.3)
 		// Move forward with 500 duty but can run with any number for time_ms,
