@@ -62,6 +62,13 @@ void Motor_InitSimple(void){
     P1->OUT |= 0xD2;          // P1.4 and P1.1 are pull-up
 }
 
+void Motor_Sleep(){
+// Stops both motors, puts driver to sleep
+// Returns right away
+  P1->OUT &= ~0xC0;   // off
+  P2->OUT &= ~0xC0;   // off
+}
+
 void Motor_Stop(){
 // Stops both motors, puts driver to sleep
 // Returns right away
@@ -199,28 +206,28 @@ void Motor_ForwardSimple(uint16_t duty, uint32_t time_ms){
     //stop
     Motor_Stop();
     //sys delay
-    SysTick_Wait(1);
+//    SysTick_Wait(1);
 }
 void Motor_BackwardSimple(uint16_t duty, uint32_t time_ms){
     Motor_Stop();
     mtr_dir_direction(BACKWARD);
 	mtr_pwm_loop(duty, time_ms, BACKWARD);
     Motor_Stop();
-    SysTick_Wait(1);
+//    SysTick_Wait(1);
 }
 void Motor_LeftSimple(uint16_t duty, uint32_t time_ms){
     Motor_Stop();
     mtr_dir_direction(LEFT);
 	mtr_pwm_loop(duty, time_ms, LEFT);
     Motor_Stop();
-    SysTick_Wait(1);
+//    SysTick_Wait(1);
 }
 void Motor_RightSimple(uint16_t duty, uint32_t time_ms){
     Motor_Stop();
     mtr_dir_direction(RIGHT);
 	mtr_pwm_loop(duty, time_ms, RIGHT);
     Motor_Stop();
-    SysTick_Wait(1);
+//    SysTick_Wait(1);
 }
 
 /*
@@ -246,15 +253,17 @@ void Motor_Degree(uint8_t turn, uint16_t degree){
     user route
 */
 void Motor_Route(){
-      Motor_ForwardSimple(500,500);
-      Clock_Delay1ms(500);
-      Motor_BackwardSimple(500,500);
-      Clock_Delay1ms(500);
-      Motor_LeftSimple(1000,200);
-      Clock_Delay1ms(500);
-      Motor_Degree(LEFT, 90);
-      Clock_Delay1ms(500);
-      Motor_RightSimple(1000,200);
-      Clock_Delay1ms(500);
-      Motor_Degree(RIGHT, 90);
+//      Motor_ForwardSimple(500,500);
+//      Clock_Delay1ms(500);
+//      Motor_BackwardSimple(500,500);
+//      Clock_Delay1ms(500);
+//      Motor_LeftSimple(1000,200);
+//      Clock_Delay1ms(500);
+//      Motor_Degree(LEFT, 90);
+//      Clock_Delay1ms(500);
+//      Motor_RightSimple(1000,200);
+//      Clock_Delay1ms(500);
+//      Motor_Degree(RIGHT, 90);
+    Motor_ForwardSimple(500,5);
+    Motor_LeftSimple(500,1);
 }

@@ -1,1 +1,3 @@
-2022/11/16-16:47:07.530 2c78 Reusing MANIFEST C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Local Storage\leveldb/MANIFEST-000001
+2022/11/18-10:13:59.471 13b0 Reusing MANIFEST C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Local Storage\leveldb/MANIFEST-000001
+2022/11/18-10:13:59.472 13b0 Recovering log #3
+2022/11/18-10:13:59.472 13b0 Reusing old log C:\temp\embedded_lab2\.jxbrowser.userdata\Default\Local Storage\leveldb/000003.log 

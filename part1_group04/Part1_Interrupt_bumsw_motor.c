@@ -114,7 +114,7 @@ void PORT1_IRQHandler(void){
     switch(status){
     //SW1 0x04
     case 0x04:
-        if(mode != MODE_SW1){ 
+        if(mode != MODE_SW1){
             //reset the motor
             Motor_InitSimple(); 
             Motor_StopSimple(100);
@@ -123,7 +123,7 @@ void PORT1_IRQHandler(void){
         break;
     //SW2 0x0A
     case 0x0A:
-        if(mode != MODE_SW2){ 
+        if(mode != MODE_SW2){
             //reset the motor
             Motor_InitSimple(); 
             Motor_StopSimple(100);
@@ -429,16 +429,16 @@ int main(void){
           SysTick_Wait(100);
           break;
       case MODE_SW1:
-          printf("mode: MODE_SW1\n");
+//          printf("mode: MODE_SW1\n");
           //gourp04 route
           //Question: the motor function take too much time, if we have other function needed to do, i think this way of programming is not a way.
           Motor_Route();
           break;
       case MODE_SW2:
-          printf("mode: MODE_SW2\n");
+//          printf("mode: MODE_SW2\n");
           //keep forward
           //Motor_KeepForwardFullSpeed();
-          Motor_ForwardSimple(500,100);
+          Motor_ForwardSimple(500,1);
           break;
       }
 
