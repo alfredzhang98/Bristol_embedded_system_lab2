@@ -66,8 +66,13 @@ policies, either expressed or implied, of the FreeBSD Project.
 #define MODE_SW1     0x01
 #define MODE_SW2     0x02
 
+#define MODE_IP_NONE     0x00
+#define MODE_INTERRUPT   0x01
+#define MODE_POLLING     0x02
+
 //global v
 uint8_t mode = MODE_DEFAULT;
+uint8_t IP_mode = MODE_IP_NONE;
 
 
 ////PWM timer
@@ -503,26 +508,30 @@ int main(void){
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
   SysTick_Init();           // Initialise SysTick timer
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
-
-  REDLED = 0;               // Turn off the red LED
-
-  //  Switch_Init();        // Initialise switches
-  SWEdgeTrigger_Init();     // Initialise Switches to interrupt
-
-  BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
-
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
 //  Port2_Output(WHITE);      // White is the colour to represent moving forward
-
   Motor_InitSimple();       // Initialise DC Motor
   Motor_StopSimple(100);    // Stop the motor on initial state
 
-  EnableInterrupts();       // Clear the I bit
 
-//  while(!SW2IN){            // Wait for SW2 switch
-//      SysTick_Wait10ms(10); // Wait here for every 100ms
-//      REDLED = !REDLED;     // The red LED is blinking waiting for command
-//  }
+  REDLED = 1;               // Turn off the red LED
+  while(!SW2IN && !SW1IN);
+
+  REDLED = 0;               // Turn off the red LED
+  printf("SW1IN: %d\n", SW1IN);
+  printf("SW2IN: %d\n", SW2IN);
+  if(SW1IN){
+      IP_mode = MODE_INTERRUPT;
+      EnableInterrupts();       // Clear the I bit
+      //  Switch_Init();        // Initialise switches
+      SWEdgeTrigger_Init();     // Initialise Switches to interrupt
+      BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
+  }
+
+  if(SW2IN){
+      IP_mode = MODE_POLLING;
+      DisableInterrupts();
+  }
 
   // Run forever
   while(1){
@@ -530,27 +539,31 @@ int main(void){
 //#define MODE_SW1     0x01
 //#define MODE_SW2     0x02
 
-      //manual loop interrupts
+//      printf("mode: %d\n", mode);
+//      printf("IP_mode: %d\n", IP_mode);
 
-      __no_operation();
-   //   __no_operation();
-//      switch(mode){
-//      case MODE_DEFAULT:
-//          SysTick_Wait(100);
-//          break;
-//      case MODE_SW1:
-////          printf("mode: MODE_SW1\n");
-//          //gourp04 route
-//          //Question: the motor function take too much time, if we have other function needed to do, i think this way of programming is not a way.
-//          Motor_Route();
-//          break;
-//      case MODE_SW2:
-////          printf("mode: MODE_SW2\n");
-//          //keep forward
-//          //Motor_KeepForwardFullSpeed();
-//          Motor_ForwardSimple(500,1);
-//          break;
-//      }
+
+      if(IP_mode == MODE_INTERRUPT){
+          //manual loop interrupts
+          __no_operation();
+          switch(mode){
+          case MODE_DEFAULT:
+              SysTick_Wait(100);
+              break;
+          case MODE_SW1:
+    //          printf("mode: MODE_SW1\n");
+              //gourp04 route
+              //Question: the motor function take too much time, if we have other function needed to do, i think this way of programming is not a way.
+              Motor_Route();
+              break;
+          case MODE_SW2:
+    //          printf("mode: MODE_SW2\n");
+              //keep forward
+              //Motor_KeepForwardFullSpeed();
+              Motor_ForwardSimple(500,1);
+              break;
+          }
+      }
 
 //====================================================================================================================================================================
 //==================================================================================Group 04 =========================================================================
@@ -562,19 +575,29 @@ int main(void){
 //    __no_operation();      // the code will run without operation
 
 //    // This section is used for Example 2 (section 5.8.2)
-//
+      if(IP_mode == MODE_POLLING){
 
-      switch(mode){
+//          printf("SW1IN: %d\n", SW1IN);
+//          printf("SW2IN: %d\n", SW2IN);
 
+          //MODE choose
+//          if(SW1IN){
+//              mode = MODE_SW1;
+//          }
+//          if(SW2IN){
+//              mode = MODE_SW2;
+//          }
+
+          switch(mode){
           case MODE_DEFAULT:
-              SysTick_Wait(100);
+              Motor_StopSimple(100);
               break;
 
           case MODE_SW1:
               Motor_Route();
               status = Bump_Read_Input();
               if (status == 0x02|| status == 0x06 || status == 0x08 || status == 0x0C || status == 0x0E || status == 0x10) {
-                 Motor_StopSimple(100);
+                 Motor_StopSimple(10);
               }
               break;
 
@@ -585,6 +608,7 @@ int main(void){
                   checkbumpswitch(status);
               }
               break;
+          }
       }
 
 //
