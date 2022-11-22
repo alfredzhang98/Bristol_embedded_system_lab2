@@ -362,7 +362,7 @@ void checkbumpswitch(uint8_t status)
     if(mode == MODE_SW2){
         switch(status){
         //case 0x02: // Bump switch 1 (for interrupt vector)
-            case 0x6D: // Bump 1
+            case 0xEC: // Bump 1
                 // Change the coloured LED into green (backward)
                 Port2_Output(GREEN);
                 // Move backward at 500 duty for 200ms
@@ -381,7 +381,7 @@ void checkbumpswitch(uint8_t status)
                 Clock_Delay1ms(1000);
             break;
         //case 0x06: // Bump switch 2 (for interrupt vector)
-            case 0xAD: // Bump 2
+            case 0xE9: // Bump 2
                 // Change the coloured LED into green (backward)
                 Port2_Output(GREEN);
                 // Move backward at 500 duty for 200ms
@@ -400,7 +400,7 @@ void checkbumpswitch(uint8_t status)
                 Clock_Delay1ms(1000);
             break;
         //case 0x08: // Bump switch 3 (for interrupt vector)
-            case 0xCD: // Bump 3
+            case 0xE5: // Bump 3
                 // Change the coloured LED into green (backward)
                 Port2_Output(GREEN);
                 // Move backward at 500 duty for 200ms
@@ -419,7 +419,7 @@ void checkbumpswitch(uint8_t status)
                 Clock_Delay1ms(1000);
             break;
         //case 0x0C: // Bump switch 4 (for interrupt vector)
-            case 0xE5: // Bump 4
+            case 0xCD: // Bump 4
                 // Change the coloured LED into green (backward)
                 Port2_Output(GREEN);
                 // Move backward at 500 duty for 200ms
@@ -438,7 +438,7 @@ void checkbumpswitch(uint8_t status)
                 Clock_Delay1ms(1000);
             break;
         //case 0x0E: // Bump switch 5 (for interrupt vector)
-            case 0xE9: // Bump 5
+            case 0xAD: // Bump 5
                 // Change the coloured LED into green (backward)
                 Port2_Output(GREEN);
                 // Move backward at 500 duty for 200ms
@@ -457,7 +457,7 @@ void checkbumpswitch(uint8_t status)
                 Clock_Delay1ms(1000);
             break;
         //case 0x10: // Bump switch 6 (for interrupt vector)
-            case 0xEC: // Bump 6
+            case 0x6D: // Bump 6
                 // Change the coloured LED into green (backward)
                 Port2_Output(GREEN);
                 // Move backward at 500 duty for 200ms
@@ -559,7 +559,7 @@ int main(void){
 
   // Run forever
   while(1){
-      __no_operation();
+       __no_operation();
       //This is the interrupt function
       if(IP_mode == MODE_INTERRUPT){
           //manual loop interrupts
