@@ -77,6 +77,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 //global v
 uint8_t mode = MODE_DEFAULT;
 uint8_t IP_mode = MODE_IP_NONE;
+uint16_t polling_count1 = 0x00;
+uint16_t polling_count2 = 0x00;
 
 
 ////PWM timer
@@ -137,25 +139,27 @@ void BumpEdgeTrigger_Init(void){
 void PORT1_IRQHandler(void){
     uint8_t status;
     status = P1->IV;
-    switch(status){
-    //SW1 0x04
-    case 0x04:
-        if(mode != MODE_SW1){
-            //reset the motor
-            Motor_InitSimple(); 
-            Motor_StopSimple(100);
+    if(IP_mode == MODE_INTERRUPT){
+        switch(status){
+        //SW1 0x04
+        case 0x04:
+            if(mode != MODE_SW1){
+                //reset the motor
+                Motor_InitSimple();
+                Motor_StopSimple(100);
+            }
+            mode = MODE_SW1;
+            break;
+        //SW2 0x0A
+        case 0x0A:
+            if(mode != MODE_SW2){
+                //reset the motor
+                Motor_InitSimple();
+                Motor_StopSimple(100);
+            }
+            mode = MODE_SW2;
+            break;
         }
-        mode = MODE_SW1;
-        break;
-    //SW2 0x0A
-    case 0x0A:
-        if(mode != MODE_SW2){
-            //reset the motor
-            Motor_InitSimple(); 
-            Motor_StopSimple(100);
-        }
-        mode = MODE_SW2;  
-        break;
     }
     P1->IFG &= ~0xED; // clear flag
 }
@@ -200,7 +204,7 @@ void PORT4_IRQHandler(void){
 //    void Motor_Degree(uint8_t turn, uint16_t degree);
     if(mode == MODE_SW1){
         mode = MODE_DEFAULT;
-        Motor_InitSimple(); 
+        Motor_InitSimple();
         Motor_StopSimple(100);
     }
     if(mode == MODE_SW2){
@@ -348,10 +352,13 @@ uint8_t Bump_Read_Input(void){
 void checkbumpswitch(uint8_t status)
 {
     if(mode == MODE_SW1){
+
         mode = MODE_DEFAULT;
-        Motor_InitSimple(); 
+        Motor_InitSimple();
         Motor_StopSimple(100);
+
     }
+
     if(mode == MODE_SW2){
         switch(status){
         //case 0x02: // Bump switch 1 (for interrupt vector)
@@ -512,35 +519,47 @@ void Switch_Init(void){
 #define SW2IN ((*((volatile uint8_t *)(0x42098010)))^1) // input: switch SW2
 #define REDLED (*((volatile uint8_t *)(0x42098040)))    // output: red LED
 
+
 int main(void){
-  uint8_t status;
+  uint8_t status = 0xED;
 
   Clock_Init48MHz();        // Initialise clock with 48MHz frequency
+  Switch_Init();
   SysTick_Init();           // Initialise SysTick timer
   Port1_Init();             // Initialise P1.1 and P1.4 built-in buttons
+
+  BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
+  SWEdgeTrigger_Init();     // Initialise Switches to interrupt
+
   Port2_Init();             // Initialise P2.2-P2.0 built-in LEDs
+
   Motor_InitSimple();       // Initialise DC Motor
   Motor_StopSimple(100);    // Stop the motor on initial state
 
 
-  REDLED = 1;               // Turn off the red LED
-  while(!SW2IN && !SW1IN);
-  REDLED = 0;               // Turn off the red LED
-  printf("SW1IN: %d\n", SW1IN);
-  printf("SW2IN: %d\n", SW2IN);
-  if(SW1IN){
-      IP_mode = MODE_INTERRUPT;
-      BumpEdgeTrigger_Init();   // Initialise bump switches using edge interrupt
-  }
-  if(SW2IN){
-      IP_mode = MODE_POLLING;
-    //   Switch_Init();
-  }
-  SWEdgeTrigger_Init();     // Initialise Switches to interrupt
-  EnableInterrupts();       
+
+     REDLED = 1;
+     while(1){
+      if(SW1IN){
+          IP_mode = MODE_INTERRUPT;
+          EnableInterrupts();
+          REDLED = 0;
+          Port2_Output(SKYBLUE);
+          break;
+      }
+      if(SW2IN){
+          IP_mode = MODE_POLLING;
+          DisableInterrupts();
+          REDLED = 0;
+          Port2_Output(PINK);
+          break;
+      }
+    }
+  SysTick_Wait(500);
 
   // Run forever
   while(1){
+      __no_operation();
       //This is the interrupt function
       if(IP_mode == MODE_INTERRUPT){
           //manual loop interrupts
@@ -551,11 +570,13 @@ int main(void){
               break;
           case MODE_SW1:
               //gourp04 route
+              Port2_Output(0);
               Motor_Route();
               break;
           case MODE_SW2:
               //keep forward
               //Motor_KeepForwardFullSpeed();
+              Port2_Output(0);
               Motor_ForwardSimple(500,1);
               break;
           }
@@ -567,12 +588,37 @@ int main(void){
           switch(mode){
           case MODE_DEFAULT:
               Motor_StopSimple(100);
+              polling_count1 = 0;
+              polling_count2 = 0;
+              while(1){
+                  SysTick_Wait(200);
+                  if(SW1IN){
+                      printf("SW1IN: %d\n", SW1IN);
+                      mode = MODE_SW1;
+                      Port2_Output(0);
+                      break;
+                  }
+                  if(SW2IN){
+                      printf("SW2IN: %d\n", SW2IN);
+                      mode = MODE_SW2;
+                      Port2_Output(0);
+                      break;
+                  }
+              }
               break;
           case MODE_SW1:
               Motor_Route();
               status = Bump_Read_Input();
-              if (status == 0x02|| status == 0x06 || status == 0x08 || status == 0x0C || status == 0x0E || status == 0x10) {
-                checkbumpswitch(status);
+              if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
+                  checkbumpswitch(status);
+//                  printf("status: %d \n", status);
+              }
+              if(SW2IN){polling_count1++;}
+              if(polling_count1 == 200) {
+                  polling_count1 = 0;
+                  Motor_InitSimple();
+                  Motor_StopSimple(100);
+                  mode = MODE_SW2;
               }
               break;
           case MODE_SW2:
@@ -580,12 +626,22 @@ int main(void){
               status = Bump_Read_Input();
               if (status == 0x6D || status == 0xAD || status == 0xCD || status == 0xE5 || status == 0xE9 || status == 0xEC) {
                   checkbumpswitch(status);
+//                  printf("status: %d \n", status);
+              }
+              if(SW1IN){polling_count2++;}
+              if(polling_count2 == 200) {
+                  polling_count2 = 0;
+                  Motor_InitSimple();
+                  Motor_StopSimple(100);
+                  mode = MODE_SW1;
               }
               break;
           }
       }
   }
 }
+
+
 
 //Questions
 /*

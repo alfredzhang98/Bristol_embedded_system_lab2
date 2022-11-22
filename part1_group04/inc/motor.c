@@ -267,3 +267,20 @@ void Motor_Route(){
     Motor_ForwardSimple(500,5);
     Motor_LeftSimple(500,1);
 }
+
+
+void Motor_Route_user(uint16_t in1, uint16_t in2, uint16_t in3){
+//      Motor_ForwardSimple(500,500);
+//      Clock_Delay1ms(500);
+//      Motor_BackwardSimple(500,500);
+//      Clock_Delay1ms(500);
+//      Motor_LeftSimple(1000,200);
+//      Clock_Delay1ms(500);
+//      Motor_Degree(LEFT, 90);
+//      Clock_Delay1ms(500);
+//      Motor_RightSimple(1000,200);
+//      Clock_Delay1ms(500);
+//      Motor_Degree(RIGHT, 90);
+    Motor_ForwardSimple(in1,in2);
+    Motor_LeftSimple(in1,in3);
+}
