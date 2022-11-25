@@ -96,6 +96,34 @@ uint16_t polling_count2 = 0x00;
 //     TIMER_A0->CTL = 0x02F0;
 // }
 
+//my fucntion
+// void (*TimezA2Task_motor) (void);
+
+// TimezA2Task_motor(){
+//     //change the OUT status to the opposite 
+//     P2 -> OUT = ~(P2 -> OUT & 0xC0)  & 0xC0 | (P2 -> OUT & 0x3F)
+// }
+
+
+// void TimerA2_Init(void(*task)(void), uint16_t period){
+//     TimerA2Task = task;
+//     TIMER_A2->CTL = 0x0280;
+//     TIMER_A2->CCTL[0] = 0x0010;
+//     TIMER_A2->CCR[0] = 0x0280;
+//     TIMER_A2->CCR[0] = (period - 1);
+//     TIMER_A2->EXO = 0x0005;
+//     NVIC->IP[3] = (NVIC->IP[3]&0xFFFFFF00) |0x00000040;
+//     NVIC->ISER[0] = 0x00001000;
+//     TIMER_A2->CIL |= 0x0014;
+// }
+    
+// void TA2_0_IRQHandler (void) {
+//     //if time come do the timer task:TimezA2Task_motor
+//     TIMER A2->CCTL[0] &= ~0x0001;
+//     *TimezA2Task_motor () ;
+// }
+
+
 
 // Initialize SW1/SW2 using interrupt
 // Make six from Port 4 input pins
