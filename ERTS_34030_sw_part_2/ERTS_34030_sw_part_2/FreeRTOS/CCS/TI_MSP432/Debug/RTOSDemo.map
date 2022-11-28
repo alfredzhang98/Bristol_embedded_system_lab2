@@ -1,0 +1,612 @@
+******************************************************************************
+                  TI ARM Linker PC v18.1.3                     
+******************************************************************************
+>> Linked Mon Nov 26 14:10:15 2018
+
+OUTPUT FILE NAME:   <RTOSDemo.out>
+ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 000028ed
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  MAIN                  00000000   00040000  00002f1a  0003d0e6  R  X
+  INFO                  00200000   00004000  00000000  00004000  R  X
+  SRAM_CODE             01000000   00010000  00000000  00010000  RW X
+  SRAM_DATA             20000000   00010000  0000cca5  0000335b  RW  
+
+
+SEGMENT ALLOCATION MAP
+
+run origin  load origin   length   init length attrs members
+----------  ----------- ---------- ----------- ----- -------
+00000000    00000000    00002f20   00002f20    r-x
+  00000000    00000000    00000138   00000138    r-- .intvecs
+  00000138    00000138    00002da2   00002da2    r-x .text
+  00002edc    00002edc    00000008   00000008    r-- .const
+  00002ee8    00002ee8    00000038   00000038    r-- .cinit
+20000000    20000000    0000c988   00000000    rw-
+  20000000    20000000    0000c91d   00000000    rw- .bss
+  2000c920    2000c920    00000068   00000000    rw- .data
+2000fce0    2000fce0    00000320   00000000    rw-
+  2000fce0    2000fce0    00000320   00000000    rw- .stack
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.intvecs   0    00000000    00000138     
+                  00000000    00000138     msp432_startup_ccs.obj (.intvecs:retain)
+
+.text      0    00000138    00002da2     
+                  00000138    00000194     queue.obj (.text:xQueueGenericSend)
+                  000002cc    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
+                  000002d0    00000164     queue.obj (.text:xQueueReceive)
+                  00000434    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : exit.c.obj (.text:abort:abort)
+                  00000438    00000148     cs.obj (.text:CS_getDCOFrequency)
+                  00000580    00000148     tasks.obj (.text:xTaskIncrementTick)
+                  000006c8    00000134     port.obj (.text:vPortSuppressTicksAndSleep)
+                  000007fc    00000004     --HOLE-- [fill = 0]
+                  00000800    0000012c     heap_4.obj (.text:pvPortMalloc)
+                  0000092c    00000004     --HOLE-- [fill = 0]
+                  00000930    0000011c     cs.obj (.text:CS_initClockSignal)
+                  00000a4c    00000004     --HOLE-- [fill = 0]
+                  00000a50    00000114     cs.obj (.text:_CSComputeCLKFrequency)
+                  00000b64    00000004     --HOLE-- [fill = 0]
+                  00000b68    0000010c     tasks.obj (.text:xTaskResumeAll)
+                  00000c74    00000004     --HOLE-- [fill = 0]
+                  00000c78    00000108     pcm.obj (.text:__PCM_setPowerModeAdvanced)
+                  00000d80    00000100     timers.obj (.text:prvProcessReceivedCommands)
+                  00000e80    000000dc     port.obj (.text:xPortStartScheduler)
+                  00000f5c    000000da     portasm.obj (.text)
+                  00001036    00000002     --HOLE-- [fill = 0]
+                  00001038    000000d4     tasks.obj (.text:vTaskDelete)
+                  0000110c    00000004     --HOLE-- [fill = 0]
+                  00001110    000000d0     pcm.obj (.text:__PCM_setCoreVoltageLevelAdvanced)
+                  000011e0    000000ce     queue.obj (.text:xQueueGenericSendFromISR)
+                  000012ae    00000002     --HOLE-- [fill = 0]
+                  000012b0    000000c8     tasks.obj (.text:xTaskPriorityDisinherit)
+                  00001378    000000c6     tasks.obj (.text:prvInitialiseNewTask)
+                  0000143e    00000002     --HOLE-- [fill = 0]
+                  00001440    000000b8     tasks.obj (.text:vTaskSwitchContext)
+                  000014f8    000000b4     tasks.obj (.text:prvAddNewTaskToReadyList)
+                  000015ac    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.asm.obj (.text)
+                  00001648    0000009c     tasks.obj (.text:xTaskRemoveFromEventList)
+                  000016e4    00000004     --HOLE-- [fill = 0]
+                  000016e8    00000098     main_program.obj (.text:main_program)
+                  00001780    00000094     timers.obj (.text:prvSwitchTimerLists)
+                  00001814    00000004     --HOLE-- [fill = 0]
+                  00001818    00000094     tasks.obj (.text:xTaskCheckForTimeOut)
+                  000018ac    00000004     --HOLE-- [fill = 0]
+                  000018b0    00000090     queue.obj (.text:xQueueGenericReset)
+                  00001940    00000088     tasks.obj (.text:prvAddCurrentTaskToDelayedList)
+                  000019c8    00000084     tasks.obj (.text:vTaskStartScheduler)
+                  00001a4c    00000004     --HOLE-- [fill = 0]
+                  00001a50    0000007c     outputLED.obj (.text:outputLED_response)
+                  00001acc    00000004     --HOLE-- [fill = 0]
+                  00001ad0    0000007c     tasks.obj (.text:prvIdleTask)
+                  00001b4c    00000004     --HOLE-- [fill = 0]
+                  00001b50    0000007c     heap_4.obj (.text:vPortFree)
+                  00001bcc    0000007a     rtsv7M4_T_le_v4SPD16_eabi.lib : memset_t2.asm.obj (.text)
+                  00001c46    00000002     --HOLE-- [fill = 0]
+                  00001c48    00000074     timers.obj (.text:xTimerGenericCommand)
+                  00001cbc    00000004     --HOLE-- [fill = 0]
+                  00001cc0    00000070     queue.obj (.text:prvCopyDataToQueue)
+                  00001d30    00000070     heap_4.obj (.text:prvHeapInit)
+                  00001da0    00000070     tasks.obj (.text:prvInitialiseTaskLists)
+                  00001e10    00000070     timers.obj (.text:prvProcessTimerOrBlockTask)
+                  00001e80    0000006c     queue.obj (.text:prvUnlockQueue)
+                  00001eec    00000004     --HOLE-- [fill = 0]
+                  00001ef0    00000068     system_msp432p401r.obj (.text:SystemInit)
+                  00001f58    00000068     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  00001fc0    00000068     heap_4.obj (.text:prvInsertBlockIntoFreeList)
+                  00002028    00000068     port.obj (.text:vPortSetupTimerInterrupt)
+                  00002090    00000068     tasks.obj (.text:xTaskCreate)
+                  000020f8    00000064     port.obj (.text:vPortValidateInterruptPriority)
+                  0000215c    00000004     --HOLE-- [fill = 0]
+                  00002160    00000060     timers.obj (.text:prvProcessExpiredTimer)
+                  000021c0    00000058     dcMotor.obj (.text:dcMotor_Forward)
+                  00002218    00000058     timers.obj (.text:xTimerCreateTimerTask)
+                  00002270    00000054     sysctl.obj (.text:SysCtl_getTLVInfo)
+                  000022c4    00000004     --HOLE-- [fill = 0]
+                  000022c8    00000054     tasks.obj (.text:prvCheckTasksWaitingTermination)
+                  0000231c    00000004     --HOLE-- [fill = 0]
+                  00002320    00000054     timers.obj (.text:prvInsertTimerInActiveList)
+                  00002374    00000004     --HOLE-- [fill = 0]
+                  00002378    00000052     cs.obj (.text:_CSGetDividerValue)
+                  000023ca    00000006     --HOLE-- [fill = 0]
+                  000023d0    00000050     bumpSwitch.obj (.text:BumpEdgeTrigger_Init)
+                  00002420    00000050     pcm.obj (.text:PCM_getCoreVoltageLevel)
+                  00002470    00000050     cs.obj (.text:_CSGetDOCFrequency)
+                  000024c0    00000050     tasks.obj (.text:prvGetExpectedIdleTime)
+                  00002510    0000004c     timers.obj (.text:prvCheckForValidListAndQueue)
+                  0000255c    00000004     --HOLE-- [fill = 0]
+                  00002560    0000004c     main_program.obj (.text:taskBlinkRedLED)
+                  000025ac    00000004     --HOLE-- [fill = 0]
+                  000025b0    0000004c     queue.obj (.text:xQueueGenericCreate)
+                  000025fc    00000004     --HOLE-- [fill = 0]
+                  00002600    0000004a     main_program.obj (.text:prvConfigureClocks)
+                  0000264a    00000006     --HOLE-- [fill = 0]
+                  00002650    00000048     bumpSwitch.obj (.text:Port1_Init2)
+                  00002698    00000048     dcMotor.obj (.text:Port2_Init2)
+                  000026e0    00000048     queue.obj (.text:vQueueWaitForMessageRestricted)
+                  00002728    00000044     outputLED.obj (.text:ColorLED_Init)
+                  0000276c    00000044     rtsv7M4_T_le_v4SPD16_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit:__TI_auto_init_nobinit_nopinit)
+                  000027b0    00000040     tasks.obj (.text:vTaskPlaceOnEventListRestricted)
+                  000027f0    0000003c     main_program.obj (.text:Switch_Init)
+                  0000282c    00000004     --HOLE-- [fill = 0]
+                  00002830    0000003c     tasks.obj (.text:eTaskConfirmSleepModeStatus)
+                  0000286c    00000004     --HOLE-- [fill = 0]
+                  00002870    0000003c     port.obj (.text:vPortEnterCritical)
+                  000028ac    00000004     --HOLE-- [fill = 0]
+                  000028b0    0000003a     pcm.obj (.text:PCM_getPowerMode)
+                  000028ea    00000002     --HOLE-- [fill = 0]
+                  000028ec    00000038     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.text:_c_int00_noargs:_c_int00_noargs)
+                  00002924    00000004     --HOLE-- [fill = 0]
+                  00002928    00000038     port.obj (.text:prvTaskExitError)
+                  00002960    00000038     tasks.obj (.text:vTaskPlaceOnEventList)
+                  00002998    00000034     list.obj (.text:vListInsert)
+                  000029cc    00000004     --HOLE-- [fill = 0]
+                  000029d0    00000034     tasks.obj (.text:vTaskStepTick)
+                  00002a04    00000004     --HOLE-- [fill = 0]
+                  00002a08    00000030     flash.obj (.text:FlashCtl_setWaitState)
+                  00002a38    00000030     tasks.obj (.text:prvResetNextTaskUnblockTime)
+                  00002a68    00000030     port.obj (.text:vPortExitCritical)
+                  00002a98    0000002c     cs.obj (.text:CS_setDCOCenteredFrequency)
+                  00002ac4    00000004     --HOLE-- [fill = 0]
+                  00002ac8    0000002c     timers.obj (.text:prvSampleTimeNow)
+                  00002af4    00000004     --HOLE-- [fill = 0]
+                  00002af8    0000002c     port.obj (.text:pxPortInitialiseStack)
+                  00002b24    00000004     --HOLE-- [fill = 0]
+                  00002b28    0000002c     port.obj (.text:xPortSysTickHandler)
+                  00002b54    00000004     --HOLE-- [fill = 0]
+                  00002b58    00000028     outputLED.obj (.text:RedLED_Init)
+                  00002b80    00000028     queue.obj (.text:prvCopyDataFromQueue)
+                  00002ba8    00000026     list.obj (.text:uxListRemove)
+                  00002bce    00000002     --HOLE-- [fill = 0]
+                  00002bd0    00000024     cs.obj (.text:CS_clearInterruptFlag)
+                  00002bf4    00000004     --HOLE-- [fill = 0]
+                  00002bf8    00000024     timers.obj (.text:prvGetNextExpireTime)
+                  00002c1c    00000004     --HOLE-- [fill = 0]
+                  00002c20    00000020     tasks.obj (.text:xTaskGetSchedulerState)
+                  00002c40    0000001e     queue.obj (.text:prvInitialiseNewQueue)
+                  00002c5e    00000002     --HOLE-- [fill = 0]
+                  00002c60    0000001e     queue.obj (.text:prvIsQueueFull)
+                  00002c7e    00000002     --HOLE-- [fill = 0]
+                  00002c80    0000001e     list.obj (.text:vListInitialise)
+                  00002c9e    00000002     --HOLE-- [fill = 0]
+                  00002ca0    0000001c     main_program.obj (.text:taskBumpSwitch)
+                  00002cbc    00000004     --HOLE-- [fill = 0]
+                  00002cc0    0000001c     main_program.obj (.text:taskdcMotor)
+                  00002cdc    00000004     --HOLE-- [fill = 0]
+                  00002ce0    0000001a     queue.obj (.text:prvIsQueueEmpty)
+                  00002cfa    00000006     --HOLE-- [fill = 0]
+                  00002d00    0000001a     timers.obj (.text:prvTimerTask)
+                  00002d1a    00000006     --HOLE-- [fill = 0]
+                  00002d20    00000018     cs.obj (.text:CS_getMCLK)
+                  00002d38    00000018     SysTick.obj (.text:SysTick_Init)
+                  00002d50    00000018     msp432_startup_ccs.obj (.text:resetISR)
+                  00002d68    00000018     list.obj (.text:vListInsertEnd)
+                  00002d80    00000018     tasks.obj (.text:vTaskInternalSetTimeOutState)
+                  00002d98    00000014     outputLED.obj (.text:Port2_Output2)
+                  00002dac    00000004     --HOLE-- [fill = 0]
+                  00002db0    00000014     main.obj (.text:prvSetupHardware)
+                  00002dc4    00000004     --HOLE-- [fill = 0]
+                  00002dc8    00000012     tasks.obj (.text:prvDeleteTCB)
+                  00002dda    00000006     --HOLE-- [fill = 0]
+                  00002de0    00000012     main.obj (.text:vApplicationMallocFailedHook)
+                  00002df2    00000006     --HOLE-- [fill = 0]
+                  00002df8    00000012     main.obj (.text:vApplicationStackOverflowHook)
+                  00002e0a    00000006     --HOLE-- [fill = 0]
+                  00002e10    00000010     bumpSwitch.obj (.text:Bump_Read_Input)
+                  00002e20    00000010     fpu.obj (.text:FPU_enableModule)
+                  00002e30    00000010     tasks.obj (.text:vTaskSuspendAll)
+                  00002e40    0000000e     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  00002e4e    00000002     --HOLE-- [fill = 0]
+                  00002e50    0000000e     main.obj (.text:main)
+                  00002e5e    00000002     --HOLE-- [fill = 0]
+                  00002e60    0000000c     pcm.obj (.text:PCM_getPowerState)
+                  00002e6c    0000000c     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init)
+                  00002e78    0000000c     tasks.obj (.text:vTaskMissedYield)
+                  00002e84    00000004     --HOLE-- [fill = 0]
+                  00002e88    0000000c     tasks.obj (.text:xTaskGetTickCount)
+                  00002e94    00000004     --HOLE-- [fill = 0]
+                  00002e98    00000008     pcm.obj (.text:PCM_setCoreVoltageLevel)
+                  00002ea0    00000008     pcm.obj (.text:PCM_setPowerMode)
+                  00002ea8    00000006     list.obj (.text:vListInitialiseItem)
+                  00002eae    00000002     --HOLE-- [fill = 0]
+                  00002eb0    00000002     msp432_startup_ccs.obj (.text:defaultISR)
+                  00002eb2    00000006     --HOLE-- [fill = 0]
+                  00002eb8    00000002     msp432_startup_ccs.obj (.text:faultISR)
+                  00002eba    00000006     --HOLE-- [fill = 0]
+                  00002ec0    00000002     msp432_startup_ccs.obj (.text:nmiISR)
+                  00002ec2    00000006     --HOLE-- [fill = 0]
+                  00002ec8    00000002     main.obj (.text:vApplicationIdleHook)
+                  00002eca    00000006     --HOLE-- [fill = 0]
+                  00002ed0    00000002     main_program.obj (.text:vApplicationTickHook)
+                  00002ed2    00000006     --HOLE-- [fill = 0]
+                  00002ed8    00000002     main_program.obj (.text:vPreSleepProcessing)
+
+.const     0    00002edc    00000008     
+                  00002edc    00000008     port.obj (.const)
+
+.cinit     0    00002ee8    00000038     
+                  00002ee8    00000014     (.cinit..data.load) [load image, compression = lzss]
+                  00002efc    0000000c     (__TI_handler_table)
+                  00002f08    00000008     (.cinit..bss.load) [load image, compression = zero_init]
+                  00002f10    00000010     (__TI_cinit_table)
+
+.bss       0    20000000    0000c91d     UNINITIALIZED
+                  20000000    0000c800     heap_4.obj (.bss:ucHeap)
+                  2000c800    00000064     tasks.obj (.bss:pxReadyTasksLists)
+                  2000c864    00000014     timers.obj (.bss:xActiveTimerList1)
+                  2000c878    00000014     timers.obj (.bss:xActiveTimerList2)
+                  2000c88c    00000014     tasks.obj (.bss:xDelayedTaskList1)
+                  2000c8a0    00000014     tasks.obj (.bss:xDelayedTaskList2)
+                  2000c8b4    00000014     tasks.obj (.bss:xPendingReadyList)
+                  2000c8c8    00000014     tasks.obj (.bss:xSuspendedTaskList)
+                  2000c8dc    00000014     tasks.obj (.bss:xTasksWaitingTermination)
+                  2000c8f0    00000008     cs.obj (.bss)
+                  2000c8f8    00000008     tasks.obj (.bss)
+                  2000c900    00000008     timers.obj (.bss)
+                  2000c908    00000008     heap_4.obj (.bss:xStart)
+                  2000c910    00000004     (.common:taskHandle_BlinkRedLED)
+                  2000c914    00000004     (.common:taskHandle_BumpSwitch)
+                  2000c918    00000004     (.common:taskHandle_dcMotor)
+                  2000c91c    00000001     (.common:bumpSwitch_status)
+
+.data      0    2000c920    00000068     UNINITIALIZED
+                  2000c920    00000034     tasks.obj (.data)
+                  2000c954    00000018     port.obj (.data)
+                  2000c96c    00000010     heap_4.obj (.data)
+                  2000c97c    0000000c     timers.obj (.data)
+
+.stack     0    2000fce0    00000320     UNINITIALIZED
+                  2000fce0    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.stack)
+                  2000fce4    0000031c     --HOLE--
+
+MODULE SUMMARY
+
+       Module                       code    ro data   rw data
+       ------                       ----    -------   -------
+    .\
+       main.obj                     72      0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       72      0         0      
+                                                             
+    .\FreeRTOS_Source\
+       tasks.obj                    3040    0         260    
+       queue.obj                    1604    0         0      
+       timers.obj                   1082    0         60     
+       list.obj                     150     0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       5876    0         320    
+                                                             
+    .\FreeRTOS_Source\portable\CCS\ARM_CM4F\
+       port.obj                     984     8         24     
+       portasm.obj                  218     0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       1202    8         24     
+                                                             
+    .\FreeRTOS_Source\portable\MemMang\
+       heap_4.obj                   640     0         51224  
+    +--+----------------------------+-------+---------+---------+
+       Total:                       640     0         51224  
+                                                             
+    .\MainProgram\
+       main_program.obj             422     0         13     
+    +--+----------------------------+-------+---------+---------+
+       Total:                       422     0         13     
+                                                             
+    .\driverlib\
+       cs.obj                       1154    0         8      
+       pcm.obj                      638     0         0      
+       sysctl.obj                   84      0         0      
+       flash.obj                    48      0         0      
+       fpu.obj                      16      0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       1940    0         8      
+                                                             
+    .\inc\
+       outputLED.obj                252     0         0      
+       bumpSwitch.obj               168     0         0      
+       dcMotor.obj                  160     0         0      
+       SysTick.obj                  24      0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       604     0         0      
+                                                             
+    .\system\CCS\
+       msp432_startup_ccs.obj       30      312       0      
+       system_msp432p401r.obj       104     0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       134     312       0      
+                                                             
+    C:\TI\ccs\ccsv8\tools\compiler\ti-cgt-arm_18.1.3.LTS\lib\rtsv7M4_T_le_v4SPD16_eabi.lib
+       memcpy_t2.asm.obj            156     0         0      
+       memset_t2.asm.obj            122     0         0      
+       copy_decompress_lzss.c.obj   104     0         0      
+       autoinit.c.obj               68      0         0      
+       boot_cortex_m.c.obj          56      0         0      
+       copy_decompress_none.c.obj   14      0         0      
+       copy_zero_init.c.obj         12      0         0      
+       exit.c.obj                   4       0         0      
+       pre_init.c.obj               4       0         0      
+    +--+----------------------------+-------+---------+---------+
+       Total:                       540     0         0      
+                                                             
+       Stack:                       0       0         800    
+       Linker Generated:            0       56        0      
+    +--+----------------------------+-------+---------+---------+
+       Grand Total:                 11430   376       52389  
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 00002f10 records: 2, size/record: 8, table size: 16
+	.data: load addr=00002ee8, load size=00000014 bytes, run addr=2000c920, run size=00000068 bytes, compression=lzss
+	.bss: load addr=00002f08, load size=00000008 bytes, run addr=20000000, run size=0000c91d bytes, compression=zero_init
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00002efc records: 3, size/record: 4, table size: 12
+	index: 0, handler: __TI_decompress_lzss
+	index: 1, handler: __TI_decompress_none
+	index: 2, handler: __TI_zero_init
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                           
+-------   ----                           
+000023d1  BumpEdgeTrigger_Init           
+00002e11  Bump_Read_Input                
+00000435  C$$EXIT                        
+00002bd1  CS_clearInterruptFlag          
+00000439  CS_getDCOFrequency             
+00002d21  CS_getMCLK                     
+00000931  CS_initClockSignal             
+00002a99  CS_setDCOCenteredFrequency     
+00002729  ColorLED_Init                  
+00002e21  FPU_enableModule               
+00002a09  FlashCtl_setWaitState          
+00002421  PCM_getCoreVoltageLevel        
+000028b1  PCM_getPowerMode               
+00002e61  PCM_getPowerState              
+00002e99  PCM_setCoreVoltageLevel        
+00002ea1  PCM_setPowerMode               
+00002651  Port1_Init2                    
+00002699  Port2_Init2                    
+00002d99  Port2_Output2                  
+00002b59  RedLED_Init                    
+00002271  SysCtl_getTLVInfo              
+00002d39  SysTick_Init                   
+00001ef1  SystemInit                     
+4000480c  WDTCTL_SYM                     
+20010000  __STACK_END                    
+00000320  __STACK_SIZE                   
+00002f10  __TI_CINIT_Base                
+00002f20  __TI_CINIT_Limit               
+00002efc  __TI_Handler_Table_Base        
+00002f08  __TI_Handler_Table_Limit       
+0000276d  __TI_auto_init_nobinit_nopinit 
+00001f59  __TI_decompress_lzss           
+00002e41  __TI_decompress_none           
+ffffffff  __TI_pprof_out_hndl            
+ffffffff  __TI_prof_data_size            
+ffffffff  __TI_prof_data_start           
+00000000  __TI_static_base__             
+00002e6d  __TI_zero_init                 
+00001bcd  __aeabi_memclr                 
+00001bcd  __aeabi_memclr4                
+00001bcd  __aeabi_memclr8                
+000015ad  __aeabi_memcpy                 
+000015ad  __aeabi_memcpy4                
+000015ad  __aeabi_memcpy8                
+00001bcf  __aeabi_memset                 
+00001bcf  __aeabi_memset4                
+00001bcf  __aeabi_memset8                
+ffffffff  __binit__                      
+ffffffff  __c_args__                     
+UNDEFED   __mpu_init                     
+2000fce0  __stack                        
+000028ed  _c_int00_noargs                
+UNDEFED   _system_post_cinit             
+000002cd  _system_pre_init               
+00000435  abort                          
+ffffffff  binit                          
+2000c91c  bumpSwitch_status              
+000021c1  dcMotor_Forward                
+00002831  eTaskConfirmSleepModeStatus    
+00000000  interruptVectors               
+00002e51  main                           
+000016e9  main_program                   
+000015ad  memcpy                         
+00001bd5  memset                         
+00001a51  outputLED_response             
+00000801  pvPortMalloc                   
+2000c920  pxCurrentTCB                   
+00002af9  pxPortInitialiseStack          
+2000c910  taskHandle_BlinkRedLED         
+2000c914  taskHandle_BumpSwitch          
+2000c918  taskHandle_dcMotor             
+00002edc  ulMaxSyscallInterruptPriority  
+00000f6d  ulPortGetIPSR                  
+00002ba9  uxListRemove                   
+00002ec9  vApplicationIdleHook           
+00002de1  vApplicationMallocFailedHook   
+00002df9  vApplicationStackOverflowHook  
+00002ed1  vApplicationTickHook           
+00002c81  vListInitialise                
+00002ea9  vListInitialiseItem            
+00002999  vListInsert                    
+00002d69  vListInsertEnd                 
+00001029  vPortEnableVFP                 
+00002871  vPortEnterCritical             
+00002a69  vPortExitCritical              
+00001b51  vPortFree                      
+00000fe5  vPortSVCHandler                
+00002029  vPortSetupTimerInterrupt       
+00001005  vPortStartFirstTask            
+000006c9  vPortSuppressTicksAndSleep     
+000020f9  vPortValidateInterruptPriority 
+00002ed9  vPreSleepProcessing            
+000026e1  vQueueWaitForMessageRestricted 
+00001039  vTaskDelete                    
+00002d81  vTaskInternalSetTimeOutState   
+00002e79  vTaskMissedYield               
+00002961  vTaskPlaceOnEventList          
+000027b1  vTaskPlaceOnEventListRestricted
+000019c9  vTaskStartScheduler            
+000029d1  vTaskStepTick                  
+00002e31  vTaskSuspendAll                
+00001441  vTaskSwitchContext             
+00000f85  xPortPendSVHandler             
+00000e81  xPortStartScheduler            
+00002b29  xPortSysTickHandler            
+000025b1  xQueueGenericCreate            
+000018b1  xQueueGenericReset             
+00000139  xQueueGenericSend              
+000011e1  xQueueGenericSendFromISR       
+000002d1  xQueueReceive                  
+00001819  xTaskCheckForTimeOut           
+00002091  xTaskCreate                    
+00002c21  xTaskGetSchedulerState         
+00002e89  xTaskGetTickCount              
+00000581  xTaskIncrementTick             
+000012b1  xTaskPriorityDisinherit        
+00001649  xTaskRemoveFromEventList       
+00000b69  xTaskResumeAll                 
+00002219  xTimerCreateTimerTask          
+00001c49  xTimerGenericCommand           
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                           
+-------   ----                           
+00000000  __TI_static_base__             
+00000000  interruptVectors               
+00000139  xQueueGenericSend              
+000002cd  _system_pre_init               
+000002d1  xQueueReceive                  
+00000320  __STACK_SIZE                   
+00000435  C$$EXIT                        
+00000435  abort                          
+00000439  CS_getDCOFrequency             
+00000581  xTaskIncrementTick             
+000006c9  vPortSuppressTicksAndSleep     
+00000801  pvPortMalloc                   
+00000931  CS_initClockSignal             
+00000b69  xTaskResumeAll                 
+00000e81  xPortStartScheduler            
+00000f6d  ulPortGetIPSR                  
+00000f85  xPortPendSVHandler             
+00000fe5  vPortSVCHandler                
+00001005  vPortStartFirstTask            
+00001029  vPortEnableVFP                 
+00001039  vTaskDelete                    
+000011e1  xQueueGenericSendFromISR       
+000012b1  xTaskPriorityDisinherit        
+00001441  vTaskSwitchContext             
+000015ad  __aeabi_memcpy                 
+000015ad  __aeabi_memcpy4                
+000015ad  __aeabi_memcpy8                
+000015ad  memcpy                         
+00001649  xTaskRemoveFromEventList       
+000016e9  main_program                   
+00001819  xTaskCheckForTimeOut           
+000018b1  xQueueGenericReset             
+000019c9  vTaskStartScheduler            
+00001a51  outputLED_response             
+00001b51  vPortFree                      
+00001bcd  __aeabi_memclr                 
+00001bcd  __aeabi_memclr4                
+00001bcd  __aeabi_memclr8                
+00001bcf  __aeabi_memset                 
+00001bcf  __aeabi_memset4                
+00001bcf  __aeabi_memset8                
+00001bd5  memset                         
+00001c49  xTimerGenericCommand           
+00001ef1  SystemInit                     
+00001f59  __TI_decompress_lzss           
+00002029  vPortSetupTimerInterrupt       
+00002091  xTaskCreate                    
+000020f9  vPortValidateInterruptPriority 
+000021c1  dcMotor_Forward                
+00002219  xTimerCreateTimerTask          
+00002271  SysCtl_getTLVInfo              
+000023d1  BumpEdgeTrigger_Init           
+00002421  PCM_getCoreVoltageLevel        
+000025b1  xQueueGenericCreate            
+00002651  Port1_Init2                    
+00002699  Port2_Init2                    
+000026e1  vQueueWaitForMessageRestricted 
+00002729  ColorLED_Init                  
+0000276d  __TI_auto_init_nobinit_nopinit 
+000027b1  vTaskPlaceOnEventListRestricted
+00002831  eTaskConfirmSleepModeStatus    
+00002871  vPortEnterCritical             
+000028b1  PCM_getPowerMode               
+000028ed  _c_int00_noargs                
+00002961  vTaskPlaceOnEventList          
+00002999  vListInsert                    
+000029d1  vTaskStepTick                  
+00002a09  FlashCtl_setWaitState          
+00002a69  vPortExitCritical              
+00002a99  CS_setDCOCenteredFrequency     
+00002af9  pxPortInitialiseStack          
+00002b29  xPortSysTickHandler            
+00002b59  RedLED_Init                    
+00002ba9  uxListRemove                   
+00002bd1  CS_clearInterruptFlag          
+00002c21  xTaskGetSchedulerState         
+00002c81  vListInitialise                
+00002d21  CS_getMCLK                     
+00002d39  SysTick_Init                   
+00002d69  vListInsertEnd                 
+00002d81  vTaskInternalSetTimeOutState   
+00002d99  Port2_Output2                  
+00002de1  vApplicationMallocFailedHook   
+00002df9  vApplicationStackOverflowHook  
+00002e11  Bump_Read_Input                
+00002e21  FPU_enableModule               
+00002e31  vTaskSuspendAll                
+00002e41  __TI_decompress_none           
+00002e51  main                           
+00002e61  PCM_getPowerState              
+00002e6d  __TI_zero_init                 
+00002e79  vTaskMissedYield               
+00002e89  xTaskGetTickCount              
+00002e99  PCM_setCoreVoltageLevel        
+00002ea1  PCM_setPowerMode               
+00002ea9  vListInitialiseItem            
+00002ec9  vApplicationIdleHook           
+00002ed1  vApplicationTickHook           
+00002ed9  vPreSleepProcessing            
+00002edc  ulMaxSyscallInterruptPriority  
+00002efc  __TI_Handler_Table_Base        
+00002f08  __TI_Handler_Table_Limit       
+00002f10  __TI_CINIT_Base                
+00002f20  __TI_CINIT_Limit               
+2000c910  taskHandle_BlinkRedLED         
+2000c914  taskHandle_BumpSwitch          
+2000c918  taskHandle_dcMotor             
+2000c91c  bumpSwitch_status              
+2000c920  pxCurrentTCB                   
+2000fce0  __stack                        
+20010000  __STACK_END                    
+4000480c  WDTCTL_SYM                     
+ffffffff  __TI_pprof_out_hndl            
+ffffffff  __TI_prof_data_size            
+ffffffff  __TI_prof_data_start           
+ffffffff  __binit__                      
+ffffffff  __c_args__                     
+ffffffff  binit                          
+UNDEFED   __mpu_init                     
+UNDEFED   _system_post_cinit             
+
+[120 symbols]
