@@ -137,7 +137,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 2
         //       pxCreatedTask: taskHandle_BlinkRedLED
-        xTaskCreate(taskMasterThread, "taskT", 128, NULL, 3, &taskHandle_BlinkRedLED);
+        xTaskCreate(taskMasterThread, "taskT", 128, NULL, 2, &taskHandle_BlinkRedLED);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskBumpSwitch
@@ -155,7 +155,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_PlaySong
-        xTaskCreate(taskPlaySong, "taskS", 128, NULL, 2, &taskHandle_PlaySong);
+        xTaskCreate(taskPlaySong, "taskS", 128, NULL, 1, &taskHandle_PlaySong);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskdcMotor
@@ -164,7 +164,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_dcMotor
-        xTaskCreate(taskdcMotor, "taskM", 128, NULL, 2, &taskHandle_dcMotor);
+        xTaskCreate(taskdcMotor, "taskM", 128, NULL, 1, &taskHandle_dcMotor);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskReadInputSwitch
@@ -261,7 +261,6 @@ static void taskReadInputSwitch( void *pvParameters ){
 
     for( ;; )
     {
-        vTaskDelay(100);
         if (SW1IN == 1) {
             i_SW1 ^= 1;                 // toggle the variable i_SW1
             for (i=0; i<1000000; i++);  // this waiting loop is used
@@ -308,7 +307,6 @@ static void taskPlaySong(){
     // TODO: play the song's function and run forever
     while(1){
         play_song();
-        vTaskDelay(100);
     }
 }
 
@@ -327,7 +325,6 @@ static void taskBumpSwitch(){
 //         TODO: use bumpSwitch_status as the variable and
 //               use Bump_Read_Input to read the input
         bumpSwitch_status = Bump_Read_Input();
-        vTaskDelay(100);
     } // uncomment this
 
 }
@@ -339,7 +336,6 @@ static void taskDisplayOutputLED(){
         // TODO: use outputLED_response as the function and
         //       use bumpSwitch_status as the parameter
         outputLED_response(bumpSwitch_status);
-        vTaskDelay(100);
     } // uncomment this
 }
 // a static void function for taskMasterThread
