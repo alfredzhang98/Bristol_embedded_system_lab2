@@ -70,6 +70,8 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include "task.h"
 
+#define PWM_DELAY 2
+
 // Function: dcMotor_Init
 // Description: initialise DC Motor using Port 1 and 2
 void dcMotor_Init(void){
@@ -103,9 +105,9 @@ void dcMotor_Forward(uint16_t duty, uint32_t period){
 
     for(i=0; i<period; i++){
       P2->OUT |= 0xC0;   // on
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
       P2->OUT &= ~0xC0;  // off
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
     }
 }
 
@@ -122,9 +124,9 @@ void dcMotor_Backward(uint16_t duty, uint32_t period){
 
     for(i=0; i<period; i++){
       P2->OUT |= 0xC0;   // on
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
       P2->OUT &= ~0xC0;  // off
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
     }
 }
 
@@ -140,9 +142,9 @@ void dcMotor_Left(uint16_t duty, uint32_t period){
 
     for(i=0; i<period; i++){
       P2->OUT |= 0xC0;   // on
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
       P2->OUT &= ~0xC0;  // off
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
     }
 }
 
@@ -158,9 +160,9 @@ void dcMotor_Right(uint16_t duty, uint32_t period){
 
     for(i=0; i<period; i++){
       P2->OUT |= 0xC0;   // on
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
       P2->OUT &= ~0xC0;  // off
-      vTaskDelay( 1 );
+      vTaskDelay( PWM_DELAY );
     }
 }
 

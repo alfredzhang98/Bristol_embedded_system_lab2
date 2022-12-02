@@ -31,6 +31,14 @@
 // File:        main_program.c
 // Function:    The main function of our code in FreeRTOS
 
+#define DEFAULT 0x00
+#define POLLING_MDOE 0x01
+#define INTERRUPT_MODE 0x02
+
+#define HIGH_PRIORITY 3
+#define LOW_PRIORITY 1
+#define MID_PRIORITY 2
+
 /* Standard includes. */
 #include <stdio.h>
 
@@ -68,6 +76,9 @@
 // TODO: declare a global variable to read bump switches value,
 //       name this as bumpSwitch_status and use uint8_t
 uint8_t bumpSwitch_status;
+
+static uint8_t mode_choose = DEFAULT;
+
 // static void Switch_Init
 static void Switch_Init(void);
 
@@ -83,7 +94,7 @@ void static taskdcMotor();
 // TODO: declare a static void function for a task called "taskReadInputSwitch"
 void static taskReadInputSwitch(void *pvParameters);
 // TODO: declare a static void function for a task called "taskdcMotor"
-void static taskdcMotor();
+//void static taskdcMotor();
 //  TODO: declare a static void function for a task called "taskDisplayOutputLED"
 void static taskDisplayOutputLED();
 //void static taskdcMotor();
@@ -112,6 +123,10 @@ xTaskHandle taskHandle_OutputLED = NULL;
 
 void main_program( void )
 {
+
+//#define DEFAULT 0x00
+//#define POLLING_MDOE 0x01
+//#define INTERRUPT_MODE 0x02
     // initialise the clock configuration
     prvConfigureClocks();
 
@@ -137,7 +152,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 2
         //       pxCreatedTask: taskHandle_BlinkRedLED
-        xTaskCreate(taskMasterThread, "taskT", 128, NULL, 2, &taskHandle_BlinkRedLED);
+        xTaskCreate(taskMasterThread, "taskT", 128, NULL, HIGH_PRIORITY, &taskHandle_BlinkRedLED);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskBumpSwitch
@@ -146,7 +161,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_BumpSwitch
-        xTaskCreate(taskBumpSwitch, "taskB", 128, NULL, 1, &taskHandle_BumpSwitch);
+        xTaskCreate(taskBumpSwitch, "taskB", 128, NULL, LOW_PRIORITY, &taskHandle_BumpSwitch);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskPlaySong
@@ -155,7 +170,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_PlaySong
-        xTaskCreate(taskPlaySong, "taskS", 128, NULL, 1, &taskHandle_PlaySong);
+        xTaskCreate(taskPlaySong, "taskS", 128, NULL, LOW_PRIORITY, &taskHandle_PlaySong);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskdcMotor
@@ -164,7 +179,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_dcMotor
-        xTaskCreate(taskdcMotor, "taskM", 128, NULL, 1, &taskHandle_dcMotor);
+        xTaskCreate(taskdcMotor, "taskM", 128, NULL, LOW_PRIORITY, &taskHandle_dcMotor);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskReadInputSwitch
@@ -173,7 +188,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_InputSwitch
-        xTaskCreate(taskReadInputSwitch, "taskR", 128, NULL, 1, &taskHandle_InputSwitch);
+        xTaskCreate(taskReadInputSwitch, "taskR", 128, NULL, LOW_PRIORITY, &taskHandle_InputSwitch);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskDisplayOutputLED
@@ -182,7 +197,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_OutputLED
-        xTaskCreate(taskDisplayOutputLED, "taskD", 128, NULL, 1, &taskHandle_OutputLED);
+        xTaskCreate(taskDisplayOutputLED, "taskD", 128, NULL, LOW_PRIORITY, &taskHandle_OutputLED);
 
         //////////////////////////////////////////////////////////////////
         // TIP: to start a scheduler, use vTaskStartScheduler in FreeRTOS
@@ -261,6 +276,7 @@ static void taskReadInputSwitch( void *pvParameters ){
 
     for( ;; )
     {
+        vTaskDelay(10);
         if (SW1IN == 1) {
             i_SW1 ^= 1;                 // toggle the variable i_SW1
             for (i=0; i<1000000; i++);  // this waiting loop is used
@@ -325,6 +341,12 @@ static void taskBumpSwitch(){
 //         TODO: use bumpSwitch_status as the variable and
 //               use Bump_Read_Input to read the input
         bumpSwitch_status = Bump_Read_Input();
+
+        if(bumpSwitch_status != 0xED){
+            vTaskPrioritySet(taskHandle_OutputLED, MID_PRIORITY);
+            vTaskPrioritySet(taskHandle_dcMotor, MID_PRIORITY);
+        }
+        vTaskDelay(10);
     } // uncomment this
 
 }
@@ -336,6 +358,8 @@ static void taskDisplayOutputLED(){
         // TODO: use outputLED_response as the function and
         //       use bumpSwitch_status as the parameter
         outputLED_response(bumpSwitch_status);
+        vTaskPrioritySet(taskHandle_OutputLED, LOW_PRIORITY);
+
     } // uncomment this
 }
 // a static void function for taskMasterThread
@@ -347,7 +371,7 @@ static void taskMasterThread( void *pvParameters )
     Port2_Output2(WHITE);
 
     // initialise the red LED
-    RedLED_Init();
+//    RedLED_Init();
 
     while(!SW2IN){                  // Wait for SW2 switch
         for (i=0; i<1000000; i++);  // Wait here waiting for command
@@ -392,6 +416,8 @@ static void taskdcMotor(){
     //       use dcMotor_response and bumpSwitch_status for the parameter
     while(1){
         dcMotor_response(bumpSwitch_status);
+        vTaskDelay(10);
+        vTaskPrioritySet(taskHandle_dcMotor, LOW_PRIORITY);
     }
 
 }

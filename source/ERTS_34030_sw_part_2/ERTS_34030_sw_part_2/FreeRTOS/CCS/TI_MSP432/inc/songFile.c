@@ -101,14 +101,15 @@ void beep(unsigned int note, unsigned int duration)
 
     // This is how much time we need to spend on the note.
     long time = (long)((duration*duration_time)/(delay*2));
-    for (i=0;i<time;i++)
+    for (i=0;i<time * 2;i++)
     {
         P2->OUT |= 0x10;   // on Set P2.4...
         delay_us(delay);   //...for a semiperiod...
         P2->OUT &= ~0x10;  // off, reset it...
         delay_us(delay);   //...for the other semiperiod.
     }
-    delay_ms(delay_beep); //Add a little delay to separate the single notes
+    vTaskDelay(delay_beep / 2);
+//    delay_ms(delay_beep); //Add a little delay to separate the single notes
 }
 
 // Function: play_song
@@ -127,7 +128,8 @@ void play_song()
     beep(cH, 150);
     beep(a, 650);
 
-    delay_ms(150);
+    vTaskDelay(100);
+//    delay_ms(150);
     //end of first bit
 
     beep(eH, 500);
@@ -140,7 +142,8 @@ void play_song()
     beep(cH, 150);
     beep(a, 650);
 
-    delay_ms(150);
+    vTaskDelay(100);
+//    delay_ms(150);
     //end of second bit...
 
     beep(aH, 500);
@@ -153,7 +156,8 @@ void play_song()
     beep(fH, 125);
     beep(fSH, 250);
 
-    delay_ms(250);
+    vTaskDelay(100);
+//    delay_ms(250);
 
     beep(aS, 250);
     beep(dSH, 400);
@@ -163,7 +167,8 @@ void play_song()
     beep(b, 125);
     beep(cH, 250);
 
-    delay_ms(250);
+    vTaskDelay(100);
+//    delay_ms(250);
 
     beep(f, 125);
     beep(gS, 500);
@@ -187,7 +192,8 @@ void play_song()
     beep(fH, 125);
     beep(fSH, 250);
 
-    delay_ms(250);
+    vTaskDelay(100);
+//    delay_ms(250);
 
     beep(aS, 250);
     beep(dSH, 400);
@@ -197,7 +203,8 @@ void play_song()
     beep(b, 125);
     beep(cH, 250);
 
-    delay_ms(250);
+    vTaskDelay(100);
+//    delay_ms(250);
 
     beep(f, 250);
     beep(gS, 500);
@@ -209,7 +216,8 @@ void play_song()
     beep(a, 650);
     //end of the song
 
-    delay_ms(2000); //Add a 2 sec. delay to avoid replaying right after the end.
+    vTaskDelay(1000);
+//    delay_ms(2000); //Add a 2 sec. delay to avoid replaying right after the end.
 
 }
 
@@ -230,6 +238,6 @@ void delay_ms(unsigned int ms )
 void delay_us(unsigned int us )
 {
     unsigned int i;
-    for (i = 0; i<= us/2; i++)
+    for (i = 0; i<= us / 2; i++)
        __delay_cycles(1);
 }
