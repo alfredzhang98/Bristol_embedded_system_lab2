@@ -46,6 +46,7 @@
 #include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timers.h"
 #include "semphr.h"
 
 /* TI includes. */
@@ -73,11 +74,19 @@
 #define SW2IN ((*((volatile uint8_t *)(0x42098010)))^1)
 //REDLED
 #define REDLED (*((volatile uint8_t *)(0x42098040)))
+
+
 // TODO: declare a global variable to read bump switches value,
 //       name this as bumpSwitch_status and use uint8_t
-uint8_t bumpSwitch_status;
+// volatile data protect
+volatile uint8_t bumpSwitch_status;
+//use for pwm timer cnt
+uint16_t cnt_motor;
 
-static uint8_t mode_choose = DEFAULT;
+// function for timer
+void vTimerCallback_bumpStatus(TimerHandle_t xTimer);
+void vTimerCallback_Motor(TimerHandle_t xTimer);
+
 
 // static void Switch_Init
 static void Switch_Init(void);
@@ -108,6 +117,11 @@ void main_program( void );
  */
 static void prvConfigureClocks( void );
 
+//TIMER handler status
+TimerHandle_t xTimer_getBumpStatus;
+//TIMER handler motor normal movement
+TimerHandle_t xTimer_Motor;
+
 // declare an identifier of task handler called "taskHandle_BlinkRedLED"
 xTaskHandle taskHandle_BlinkRedLED = NULL;
 // TODO: declare an identifier of task handler called "taskHandle_BumpSwitch"
@@ -136,6 +150,8 @@ void main_program( void )
 
     // TODO: initialise the switch
     Switch_Init();
+    //if we do not use the taskBumpSwitch task we should init the bump switch at first
+    BumpSwitch_Init();
 
     // TODO: initialise systick timer
     SysTick_Init();
@@ -144,6 +160,11 @@ void main_program( void )
     // TIP: to create a task, use xTaskCreate in FreeRTOS
     // URL : https://www.freertos.org/a00125.html
     //////////////////////////////////////////////////////
+        //timer
+        xTimer_getBumpStatus = xTimerCreate("Timer_bumpStatus", 100, pdTRUE, ( void * ) 1, vTimerCallback_bumpStatus);
+        xTimerStart(xTimer_getBumpStatus,200);
+        xTimer_Motor = xTimerCreate("Timer_motor", 10, pdTRUE, ( void * ) 1, vTimerCallback_Motor);
+        xTimerStart(xTimer_Motor,200);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskMasterThread
@@ -161,7 +182,7 @@ void main_program( void )
         //       pvParameters: NULL
         //       uxPriority: 1
         //       pxCreatedTask: taskHandle_BumpSwitch
-        xTaskCreate(taskBumpSwitch, "taskB", 128, NULL, LOW_PRIORITY, &taskHandle_BumpSwitch);
+//        xTaskCreate(taskBumpSwitch, "taskB", 128, NULL, LOW_PRIORITY, &taskHandle_BumpSwitch);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskPlaySong
@@ -169,8 +190,8 @@ void main_program( void )
         //       usStackDepth: 128
         //       pvParameters: NULL
         //       uxPriority: 1
-        //       pxCreatedTask: taskHandle_PlaySong
-        xTaskCreate(taskPlaySong, "taskS", 128, NULL, LOW_PRIORITY, &taskHandle_PlaySong);
+        //       pxCreatedTask: taskHandle_PlaySong //MID_PRIORITY
+        xTaskCreate(taskPlaySong, "taskS", 128, NULL, MID_PRIORITY, &taskHandle_PlaySong);
 
         // TODO: Create a task that has these parameters=
         //       pvTaskCode: taskdcMotor
@@ -415,9 +436,40 @@ static void taskdcMotor(){
     //       and run this forever in a while loop.
     //       use dcMotor_response and bumpSwitch_status for the parameter
     while(1){
+        //check the bump status
+        if(bumpSwitch_status != 0xED){
+            //stop the normal movement to response to the bump
+            xTimerStop(xTimer_Motor,200);
+        }
         dcMotor_response(bumpSwitch_status);
         vTaskDelay(10);
+        //reset the timer for the motor
+        xTimerReset(xTimer_Motor,200);
         vTaskPrioritySet(taskHandle_dcMotor, LOW_PRIORITY);
+    }
+}
+
+
+//callback check the bump status every 100ms
+void vTimerCallback_bumpStatus( TimerHandle_t xTimer )
+{
+    bumpSwitch_status = Bump_Read_Input();
+    if(bumpSwitch_status != 0xED){
+        vTaskPrioritySet(taskHandle_OutputLED, MID_PRIORITY);
+        vTaskPrioritySet(taskHandle_dcMotor, MID_PRIORITY);
+    }
+}
+
+//callback the normal forward moving to realised the PWM movement
+void vTimerCallback_Motor( TimerHandle_t xTimer )
+{
+    cnt_motor++;
+    if(cnt_motor == 0xFFFF) cnt_motor = 0;
+    if(cnt_motor%2 == 0){
+        P2->OUT |= 0xC0;   // on
+    }else{
+        P2->OUT &= ~0xC0;  // off
     }
 
 }
+

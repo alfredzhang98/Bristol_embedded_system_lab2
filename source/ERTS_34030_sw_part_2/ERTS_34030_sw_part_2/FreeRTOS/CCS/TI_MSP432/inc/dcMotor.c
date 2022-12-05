@@ -70,7 +70,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include "task.h"
 
-#define PWM_DELAY 2
+#define PWM_DELAY 1
 
 // Function: dcMotor_Init
 // Description: initialise DC Motor using Port 1 and 2
@@ -172,47 +172,47 @@ void dcMotor_response(unsigned char bumpSwitch_status){
 
     switch(bumpSwitch_status){
       case 0xEC: // Bump switch 1
-          dcMotor_Backward(500, 100);
-          dcMotor_Stop(500);
-          dcMotor_Left(500, 10);
-          dcMotor_Stop(500);
-        break;
-      case 0xE9: // Bump switch 2
-          dcMotor_Backward(500, 100);
-          dcMotor_Stop(500);
-          dcMotor_Left(500, 30);
-          dcMotor_Stop(500);
-        break;
-      case 0xE5: // Bump switch 3
-          dcMotor_Backward(500, 100);
+          dcMotor_Backward(500, 150);
           dcMotor_Stop(500);
           dcMotor_Left(500, 50);
           dcMotor_Stop(500);
         break;
+      case 0xE9: // Bump switch 2
+          dcMotor_Backward(500, 150);
+          dcMotor_Stop(500);
+          dcMotor_Left(500, 100);
+          dcMotor_Stop(500);
+        break;
+      case 0xE5: // Bump switch 3
+          dcMotor_Backward(500, 150);
+          dcMotor_Stop(500);
+          dcMotor_Left(500, 150);
+          dcMotor_Stop(500);
+        break;
       case 0xCD: // Bump switch 4
-          dcMotor_Backward(500, 100);
+          dcMotor_Backward(500, 150);
+          dcMotor_Stop(500);
+          dcMotor_Right(500, 150);
+          dcMotor_Stop(500);
+        break;
+      case 0xAD: // Bump switch 5
+          dcMotor_Backward(500, 150);
+          dcMotor_Stop(500);
+          dcMotor_Right(500, 100);
+          dcMotor_Stop(500);
+        break;
+      case 0x6D: // Bump switch 6
+          dcMotor_Backward(500, 150);
           dcMotor_Stop(500);
           dcMotor_Right(500, 50);
           dcMotor_Stop(500);
         break;
-      case 0xAD: // Bump switch 5
-          dcMotor_Backward(500, 100);
-          dcMotor_Stop(500);
-          dcMotor_Right(500, 30);
-          dcMotor_Stop(500);
-        break;
-      case 0x6D: // Bump switch 6
-          dcMotor_Backward(500, 100);
-          dcMotor_Stop(500);
-          dcMotor_Right(500, 10);
-          dcMotor_Stop(500);
-        break;
       case 0xED: // none of the bump switches are pressed
-          dcMotor_Forward(500, 10);
+//          dcMotor_Forward(500, 10);
           //dcMotor_Stop(50);
         break;
       default: // when more than two bump switches are pressed
-          dcMotor_Backward(500, 100);
+          dcMotor_Backward(500, 150);
           dcMotor_Stop(500);
           dcMotor_Right(500, 50);
           dcMotor_Stop(500);

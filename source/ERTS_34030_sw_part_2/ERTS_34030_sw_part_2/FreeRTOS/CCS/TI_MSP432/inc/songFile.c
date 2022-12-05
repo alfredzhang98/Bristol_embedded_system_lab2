@@ -128,7 +128,7 @@ void play_song()
     beep(cH, 150);
     beep(a, 650);
 
-    vTaskDelay(100);
+    vTaskDelay(150);
 //    delay_ms(150);
     //end of first bit
 
@@ -142,7 +142,7 @@ void play_song()
     beep(cH, 150);
     beep(a, 650);
 
-    vTaskDelay(100);
+    vTaskDelay(150);
 //    delay_ms(150);
     //end of second bit...
 
@@ -156,7 +156,7 @@ void play_song()
     beep(fH, 125);
     beep(fSH, 250);
 
-    vTaskDelay(100);
+    vTaskDelay(250);
 //    delay_ms(250);
 
     beep(aS, 250);
@@ -167,7 +167,7 @@ void play_song()
     beep(b, 125);
     beep(cH, 250);
 
-    vTaskDelay(100);
+    vTaskDelay(250);
 //    delay_ms(250);
 
     beep(f, 125);
@@ -192,7 +192,7 @@ void play_song()
     beep(fH, 125);
     beep(fSH, 250);
 
-    vTaskDelay(100);
+    vTaskDelay(250);
 //    delay_ms(250);
 
     beep(aS, 250);
@@ -203,7 +203,7 @@ void play_song()
     beep(b, 125);
     beep(cH, 250);
 
-    vTaskDelay(100);
+    vTaskDelay(250);
 //    delay_ms(250);
 
     beep(f, 250);
@@ -216,7 +216,7 @@ void play_song()
     beep(a, 650);
     //end of the song
 
-    vTaskDelay(1000);
+    vTaskDelay(2000);
 //    delay_ms(2000); //Add a 2 sec. delay to avoid replaying right after the end.
 
 }
@@ -238,6 +238,6 @@ void delay_ms(unsigned int ms )
 void delay_us(unsigned int us )
 {
     unsigned int i;
-    for (i = 0; i<= us / 2; i++)
+    for (i = 0; i<= us; i++)
        __delay_cycles(1);
 }
