@@ -146,79 +146,124 @@ void play_song()
 //    delay_ms(150);
     //end of second bit...
 
-    beep(aH, 500);
-    beep(a, 300);
-    beep(a, 150);
-    beep(aH, 400);
-    beep(gSH, 200);
-    beep(gH, 200);
-    beep(fSH, 125);
-    beep(fH, 125);
-    beep(fSH, 250);
-
-    vTaskDelay(250);
+//    beep(aH, 500);
+//    beep(a, 300);
+//    beep(a, 150);
+//    beep(aH, 400);
+//    beep(gSH, 200);
+//    beep(gH, 200);
+//    beep(fSH, 125);
+//    beep(fH, 125);
+//    beep(fSH, 250);
+//
+//    vTaskDelay(250);
 //    delay_ms(250);
 
-    beep(aS, 250);
-    beep(dSH, 400);
-    beep(dH, 200);
-    beep(cSH, 200);
-    beep(cH, 125);
-    beep(b, 125);
-    beep(cH, 250);
-
-    vTaskDelay(250);
-//    delay_ms(250);
-
-    beep(f, 125);
-    beep(gS, 500);
-    beep(f, 375);
-    beep(a, 125);
-    beep(cH, 500);
-    beep(a, 375);
-    beep(cH, 125);
-    beep(eH, 650);
-
-    //end of third bit... (Though it doesn't play well)
-    //let's repeat it
-
-    beep(aH, 500);
-    beep(a, 300);
-    beep(a, 150);
-    beep(aH, 400);
-    beep(gSH, 200);
-    beep(gH, 200);
-    beep(fSH, 125);
-    beep(fH, 125);
-    beep(fSH, 250);
-
-    vTaskDelay(250);
-//    delay_ms(250);
-
-    beep(aS, 250);
-    beep(dSH, 400);
-    beep(dH, 200);
-    beep(cSH, 200);
-    beep(cH, 125);
-    beep(b, 125);
-    beep(cH, 250);
-
-    vTaskDelay(250);
-//    delay_ms(250);
-
-    beep(f, 250);
-    beep(gS, 500);
-    beep(f, 375);
-    beep(cH, 125);
-    beep(a, 500);
-    beep(f, 375);
-    beep(cH, 125);
-    beep(a, 650);
-    //end of the song
+//    beep(aS, 250);
+//    beep(dSH, 400);
+//    beep(dH, 200);
+//    beep(cSH, 200);
+//    beep(cH, 125);
+//    beep(b, 125);
+//    beep(cH, 250);
+//
+//    vTaskDelay(250);
+////    delay_ms(250);
+//
+//    beep(f, 125);
+//    beep(gS, 500);
+//    beep(f, 375);
+//    beep(a, 125);
+//    beep(cH, 500);
+//    beep(a, 375);
+//    beep(cH, 125);
+//    beep(eH, 650);
+//
+//    //end of third bit... (Though it doesn't play well)
+//    //let's repeat it
+//
+//    beep(aH, 500);
+//    beep(a, 300);
+//    beep(a, 150);
+//    beep(aH, 400);
+//    beep(gSH, 200);
+//    beep(gH, 200);
+//    beep(fSH, 125);
+//    beep(fH, 125);
+//    beep(fSH, 250);
+//
+//    vTaskDelay(250);
+////    delay_ms(250);
+//
+//    beep(aS, 250);
+//    beep(dSH, 400);
+//    beep(dH, 200);
+//    beep(cSH, 200);
+//    beep(cH, 125);
+//    beep(b, 125);
+//    beep(cH, 250);
+//
+//    vTaskDelay(250);
+////    delay_ms(250);
+//
+//    beep(f, 250);
+//    beep(gS, 500);
+//    beep(f, 375);
+//    beep(cH, 125);
+//    beep(a, 500);
+//    beep(f, 375);
+//    beep(cH, 125);
+//    beep(a, 650);
+//    //end of the song
 
     vTaskDelay(2000);
 //    delay_ms(2000); //Add a 2 sec. delay to avoid replaying right after the end.
 
+}
+
+// Function: play_song
+// Description: This is the Imperial March code.
+//              As you can see, there are lots of beeps at different frequencies and durations,
+//              and some delays to separate the various bits of this wonderful song.
+void play_song_1()
+{
+
+    beep(c,200);
+    beep(d,200);
+    beep(e,200);
+    vTaskDelay(100);
+    beep(c,200);
+    vTaskDelay(200);
+    beep(c,200);
+    beep(d,200);
+    beep(e,200);
+    vTaskDelay(100);
+    beep(c,200);
+
+    vTaskDelay(200);
+    beep(f,200);
+    beep(g,200);
+    beep(a,200);
+    vTaskDelay(100);
+    beep(f,200);
+    beep(g,200);
+    beep(a,200);
+    vTaskDelay(100);
+//    beep(440,200);
+//    beep(494,200);
+//    beep(523,200);
+//    beep(578,200);
+//    beep(659,400);
+//    vTaskDelay(128);
+//
+//    beep(988,200);
+//    beep(880,200);
+//    beep(659,400);
+//    beep(440,400);
+//    beep(659,200);
+//    vTaskDelay(64);
+
+    vTaskDelay(1000);
 }
 
 // This two functions stop the main thread for a certain number

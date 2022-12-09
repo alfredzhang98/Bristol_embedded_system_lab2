@@ -12,7 +12,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:RTOSDemo}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.C:\Users\mb14650\OneDrive - University of Bristol\Documents\Downloads\Part2\FreeRTOS\CCS\TI_MSP432\system\CCS\MSP432P401R.ccxml.Texas Instruments XDS110 USB Debug Probe/CORTEX_M4_0" value="C:/Users\mb14650\OneDrive - University of Bristol\Documents\Downloads\Part2\FreeRTOS\CCS\TI_MSP432\Debug\RTOSDemo.out"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.C:\Users\mb14650\OneDrive - University of Bristol\Documents\Downloads\Part2_LAB_OK\Part2_LAB\FreeRTOS\CCS\TI_MSP432\system\CCS\MSP432P401R.ccxml.Texas Instruments XDS110 USB Debug Probe/CORTEX_M4_0" value="C:/Users\mb14650\OneDrive - University of Bristol\Documents\Downloads\Part2_LAB_OK\Part2_LAB\FreeRTOS\CCS\TI_MSP432\Debug\RTOSDemo.out"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.MSP432P401R.ccxml.Texas Instruments XDS110 USB Debug Probe/CORTEX_M4_0" value="C:\temp\embedded_lab2\part2_code\ERTS_34030_sw_part_2\ERTS_34030_sw_part_2\FreeRTOS\CCS\TI_MSP432\Debug\RTOSDemo.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.MSP432P401R.ccxml.Texas Instruments XDS110 USB Debug Probe/CORTEX_M4_0" value="C:\temp\20220912\embedded_lab2\part2_code\ERTS_34030_sw_part_2\ERTS_34030_sw_part_2\FreeRTOS\CCS\TI_MSP432\Debug\RTOSDemo.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/RTOSDemo"/>
 </listAttribute>

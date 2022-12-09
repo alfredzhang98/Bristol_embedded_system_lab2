@@ -35,9 +35,10 @@
 #define POLLING_MDOE 0x01
 #define INTERRUPT_MODE 0x02
 
-#define HIGH_PRIORITY 3
-#define LOW_PRIORITY 1
-#define MID_PRIORITY 2
+#define HIGH_PRIORITY 4
+#define MID_PRIORITY 3
+#define LOW_PRIORITY 2
+#define LOW_LOW_PRIORITY 1
 
 /* Standard includes. */
 #include <stdio.h>
@@ -80,8 +81,12 @@
 //       name this as bumpSwitch_status and use uint8_t
 // volatile data protect
 volatile uint8_t bumpSwitch_status;
+uint8_t play_status = 0;
+uint8_t master_status = 1;
 //use for pwm timer cnt
 uint16_t cnt_motor;
+//use for songs switch
+uint16_t cnt_songs;
 
 // function for timer
 void vTimerCallback_bumpStatus(TimerHandle_t xTimer);
@@ -106,6 +111,8 @@ void static taskReadInputSwitch(void *pvParameters);
 //void static taskdcMotor();
 //  TODO: declare a static void function for a task called "taskDisplayOutputLED"
 void static taskDisplayOutputLED();
+//IRQ
+void static taskIRQ();
 //void static taskdcMotor();
 /*
  * Called by main() to create the main program application
@@ -134,6 +141,9 @@ xTaskHandle taskHandle_dcMotor = NULL;
 xTaskHandle taskHandle_InputSwitch = NULL;
 // TODO: declare an identifier of task handler called "taskHandle_OutputLED"
 xTaskHandle taskHandle_OutputLED = NULL;
+// IRQ
+xTaskHandle taskHandle_IRQ = NULL;
+
 
 void main_program( void )
 {
@@ -220,6 +230,9 @@ void main_program( void )
         //       pxCreatedTask: taskHandle_OutputLED
         xTaskCreate(taskDisplayOutputLED, "taskD", 128, NULL, LOW_PRIORITY, &taskHandle_OutputLED);
 
+        //IRQ
+        xTaskCreate(taskIRQ, "taskIRQ", 128, NULL, LOW_LOW_PRIORITY, &taskHandle_IRQ);
+
         //////////////////////////////////////////////////////////////////
         // TIP: to start a scheduler, use vTaskStartScheduler in FreeRTOS
         // URL : https://www.freertos.org/a00132.html
@@ -303,6 +316,13 @@ static void taskReadInputSwitch( void *pvParameters ){
             for (i=0; i<1000000; i++);  // this waiting loop is used
                                         // to prevent the switch bounce.
         }
+        if (SW2IN == 1) {
+            REDLED = 1;
+            play_status ^= 1;
+            for (i=0; i<1000000; i++);  // this waiting loop is used
+                                        // to prevent the switch bounce.
+            REDLED = 0;
+        }
 
         ///////////////////////////////////////////////////////////
         // TIP: to suspend a task, use vTaskSuspend in FreeRTOS
@@ -332,7 +352,6 @@ static void taskReadInputSwitch( void *pvParameters ){
                 vTaskResume(taskHandle_PlaySong);
             }
         }
-
     }
 }
 
@@ -343,7 +362,8 @@ static void taskPlaySong(){
 
     // TODO: play the song's function and run forever
     while(1){
-        play_song();
+        if(play_status == 0) play_song();
+        if(play_status == 1) play_song_1();
     }
 }
 
@@ -394,11 +414,7 @@ static void taskMasterThread( void *pvParameters )
     // initialise the red LED
 //    RedLED_Init();
 
-    while(!SW2IN){                  // Wait for SW2 switch
-        for (i=0; i<1000000; i++);  // Wait here waiting for command
-        REDLED = !REDLED;           // The red LED is blinking
-    }
-
+    while(!SW2IN);
     // TODO: Turn off the RED LED, we no longer need that.
     REDLED = 0;
 
@@ -422,6 +438,7 @@ static void taskMasterThread( void *pvParameters )
     {
 //        vTaskSuspend(taskHandle_BlinkRedLED);
         vTaskDelete(taskHandle_BlinkRedLED);
+        master_status = 0;
         Port2_Output2(0);
     }else{
         Port2_Output2(RED);
@@ -446,9 +463,18 @@ static void taskdcMotor(){
         //reset the timer for the motor
         xTimerReset(xTimer_Motor,200);
         vTaskPrioritySet(taskHandle_dcMotor, LOW_PRIORITY);
+        vTaskPrioritySet(taskHandle_IRQ, LOW_LOW_PRIORITY);
     }
 }
 
+static void taskIRQ(){
+
+    while(1){                  // Wait for SW2 switch
+        vTaskDelay(200);
+        REDLED = !REDLED;           // The red LED is blinking
+    }
+
+}
 
 //callback check the bump status every 100ms
 void vTimerCallback_bumpStatus( TimerHandle_t xTimer )
@@ -457,6 +483,7 @@ void vTimerCallback_bumpStatus( TimerHandle_t xTimer )
     if(bumpSwitch_status != 0xED){
         vTaskPrioritySet(taskHandle_OutputLED, MID_PRIORITY);
         vTaskPrioritySet(taskHandle_dcMotor, MID_PRIORITY);
+        vTaskPrioritySet(taskHandle_IRQ, MID_PRIORITY);
     }
 }
 

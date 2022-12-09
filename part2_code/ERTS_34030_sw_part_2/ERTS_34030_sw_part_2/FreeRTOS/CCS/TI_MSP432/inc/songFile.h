@@ -49,5 +49,6 @@ policies, either expressed or implied, of the FreeBSD Project.
 void init_song_pwm();
 void beep(unsigned int note, unsigned int duration);
 void play_song();
+void play_song_1();
 
 #endif
