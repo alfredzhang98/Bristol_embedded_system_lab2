@@ -393,14 +393,17 @@ static void taskBumpSwitch(){
 }
 // TODO: create a static void function for taskDisplayOutputLED
 static void taskDisplayOutputLED(){
+    uint16_t internal_status;
     for( ;; ) // uncomment this
     { // uncomment this
 
         // TODO: use outputLED_response as the function and
         //       use bumpSwitch_status as the parameter
-        outputLED_response(bumpSwitch_status);
-        vTaskPrioritySet(taskHandle_OutputLED, LOW_PRIORITY);
-
+        internal_status = bumpSwitch_status;
+        outputLED_response(internal_status);
+        if(internal_status != 0xED){
+            vTaskPrioritySet(taskHandle_OutputLED, LOW_PRIORITY);
+        }
     } // uncomment this
 }
 // a static void function for taskMasterThread
@@ -449,27 +452,33 @@ static void taskMasterThread( void *pvParameters )
 static void taskdcMotor(){
     // TODO: initialise the DC Motor
     dcMotor_Init();
+    uint16_t internal_status;
     // TODO: use a polling that continuously read from the bumpSwitch_status,
     //       and run this forever in a while loop.
     //       use dcMotor_response and bumpSwitch_status for the parameter
     while(1){
         //check the bump status
-        if(bumpSwitch_status != 0xED){
+        internal_status = bumpSwitch_status;
+        if(internal_status != 0xED){
             //stop the normal movement to response to the bump
             xTimerStop(xTimer_Motor,200);
         }
         dcMotor_response(bumpSwitch_status);
         vTaskDelay(10);
-        //reset the timer for the motor
-        xTimerReset(xTimer_Motor,200);
-        vTaskPrioritySet(taskHandle_dcMotor, LOW_PRIORITY);
-        vTaskPrioritySet(taskHandle_IRQ, LOW_LOW_PRIORITY);
+        if(internal_status != 0xED){
+            //reset the timer for the motor
+            xTimerReset(xTimer_Motor,200);
+            vTaskPrioritySet(taskHandle_dcMotor, LOW_PRIORITY);
+            vTaskPrioritySet(taskHandle_IRQ, LOW_LOW_PRIORITY);
+            REDLED = 0;
+        }
     }
 }
 
+//IRQ task for the IRQ test
 static void taskIRQ(){
 
-    while(1){                  // Wait for SW2 switch
+    while(1){
         vTaskDelay(200);
         REDLED = !REDLED;           // The red LED is blinking
     }
