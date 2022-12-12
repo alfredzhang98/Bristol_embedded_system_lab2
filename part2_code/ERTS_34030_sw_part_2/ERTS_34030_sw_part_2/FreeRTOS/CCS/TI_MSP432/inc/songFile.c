@@ -216,7 +216,7 @@ void play_song()
 //    beep(a, 650);
 //    //end of the song
 
-    vTaskDelay(2000);
+    vTaskDelay(1000);
 //    delay_ms(2000); //Add a 2 sec. delay to avoid replaying right after the end.
 
 }

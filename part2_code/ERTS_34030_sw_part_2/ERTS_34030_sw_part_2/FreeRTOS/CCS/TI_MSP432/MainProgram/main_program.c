@@ -82,7 +82,6 @@
 // volatile data protect
 volatile uint8_t bumpSwitch_status;
 uint8_t play_status = 0;
-uint8_t master_status = 1;
 //use for pwm timer cnt
 uint16_t cnt_motor;
 //use for songs switch
@@ -145,6 +144,39 @@ xTaskHandle taskHandle_OutputLED = NULL;
 xTaskHandle taskHandle_IRQ = NULL;
 
 
+// Initialize Bump sensors using interrupt
+// Make six from Port 4 input pins
+// Activate interface pull-up
+// The pins are P4.7, 4.6, 4.5, 4.3, 4.2, 4.0
+void BumpEdgeTrigger_Init(void){
+    P4->SEL0 &= ~0xED;
+    P4->SEL1 &= ~0xED;      // configure as GPIO
+    P4->DIR &= ~0xED;       // make in
+    P4->REN |= 0xED;        // enable pull resistors
+    P4->OUT |= 0xED;        // pull-up
+    P4->IES |= 0xED;        // falling edge event
+    P4->IFG &= ~0xED;       // clear flag
+    P4->IE |= 0xED;         // arm the interrupt
+    // priority 2 on port4
+    NVIC->IP[9] = (NVIC->IP[9]&0xFF00FFFF)|0x00400000;
+    // enable interrupt 38 in NVIC on port4
+    NVIC->ISER[1] = 0x00000040;
+}
+
+
+// Uses P4IV IRQ handler to solve critical section/race
+void PORT4_IRQHandler(void){
+
+    uint8_t status;
+    Port2_Output2(0);        // turn off the coloured LED
+    // Interrupt Vector of Port4
+    status = P4->IV;      // 2*(n+1) where n is highest priority
+    outputLED_response(status);
+    dcMotor_response(status);
+    P4->IFG &= ~0xED; // clear flag
+}
+
+
 void main_program( void )
 {
 
@@ -157,6 +189,7 @@ void main_program( void )
     //LED
     RedLED_Init();
     ColorLED_Init();
+//    BumpEdgeTrigger_Init();
 
     // TODO: initialise the switch
     Switch_Init();
@@ -441,7 +474,6 @@ static void taskMasterThread( void *pvParameters )
     {
 //        vTaskSuspend(taskHandle_BlinkRedLED);
         vTaskDelete(taskHandle_BlinkRedLED);
-        master_status = 0;
         Port2_Output2(0);
     }else{
         Port2_Output2(RED);
